@@ -1,0 +1,129 @@
+import tkinter
+import tkinter.messagebox
+from typing import Optional, Tuple, Union
+import customtkinter
+from tkinter import filedialog as fd
+from tkinter.messagebox import showinfo
+
+customtkinter.set_appearance_mode("dark")
+customtkinter.set_default_color_theme("blue")
+
+class App(customtkinter.CTk):
+    def __init__(self):
+        super().__init__()
+        
+        # Configure window
+        self.title("Advanced Neural Network ToolKit")
+        self.geometry(f"{1100}x{580}")
+        
+        # Configure grid
+        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure((2, 3), weight=0)
+        self.grid_rowconfigure((0, 1, 2), weight=1)
+        
+        # Create sidebar frame with widgets
+        self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
+        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
+        self.sidebar_frame.grid_rowconfigure(4, weight=1)
+        
+        # Create a logo label inside the sidebar
+        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="ANN ToolKit", font=customtkinter.CTkFont(size=20, weight="bold"))
+        self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+        
+        self.levels_of_abstraction_label = customtkinter.CTkLabel(self.sidebar_frame, text="Levels of Abstraction:", anchor="w")
+        self.levels_of_abstraction_label.grid(row=3, column=0, padx=20, pady=(10,0))
+        
+        self.levels_of_abstraction_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Low Level", "High Level"])
+                                                                        #, command=self.change_level_ofabstraction
+        self.levels_of_abstraction_optionemenu.grid(row=4, column=0, padx=20, pady=(10, 20))
+        
+        self.open_file_label = customtkinter.CTkLabel(self.sidebar_frame, text="Open a file:", anchor="w")
+        self.open_file_label.grid(row=5, column=0, padx=20, pady=(10, 0))
+        
+        self.open_file_button = customtkinter.CTkButton(self.sidebar_frame, text="Open file", bg_color="red", command=self.sidebar_open_button_event, anchor="w")
+        self.open_file_button.grid(row=6, column=0, padx=20, pady=(10, 20))
+        
+        self.author_label = customtkinter.CTkLabel(self.sidebar_frame, text="Created by:", font=customtkinter.CTkFont(size=14, weight="normal"))
+        self.author_label.grid(row=7, column=0, padx=20, pady=(10,0))
+        
+        self.author1_label = customtkinter.CTkLabel(self.sidebar_frame, text="Cesar A Villegas Espindola", font=customtkinter.CTkFont(size=14, weight="normal"))
+        self.author1_label.grid(row=8, column=0, padx=20, pady=(10,20))
+        
+            
+    def sidebar_open_button_event(self):
+        filetypes = {
+            ('csv files', '*.csv'),
+            ('All files', '*.')
+        }
+        
+        filename =fd.askopenfilename(
+            title ='Open a file',
+            initialdir='/',
+            filetypes=filetypes)
+        
+        showinfo(
+            title='Selected File',
+            message=filename
+        )
+    
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
+
+'''
+root = customtkinter.CTk()
+root.title("Test program")
+root.geometry("1080x720")
+
+frame = customtkinter.CTkFrame(master=root)
+frame.pack(pady=20, padx=20, fill="both", expand=True)
+
+logo_label = customtkinter.CTkLabel(
+    master=frame, 
+    text="Custom tester",
+    font=customtkinter.CTkFont(size=20, weight="bold")
+)
+
+logo_label.pack(expand=True, side="top", anchor="nw")
+
+# Create a textbox
+textbox = customtkinter.CTkTextbox(
+    master=frame, 
+    width=150)
+textbox.insert("0.0", "Description" + "The program contains a variety of algorithms")
+textbox.pack(expand=True, side="top", anchor="nw")
+
+def select_file():
+    filetypes = {
+        ('csv files', '*.csv'),
+        ('All files', '*.')
+    }
+    
+    filename =fd.askopenfilename(
+        title ='Open a file',
+        initialdir='/',
+        filetypes=filetypes)
+    
+    showinfo(
+        title='Selected File',
+        message=filename
+    )
+    
+open_button = customtkinter.CTkButton(
+    master=frame, 
+    text="Open a file", 
+    command=select_file
+)
+
+open_button.pack(expand=True, side="top", padx=10, pady=10, anchor="sw")
+
+root.mainloop()
+
+self.algorithms_label = customtkinter.CTkLabel(self.sidebar_frame, text="Algorithm:", anchor="w")
+self.algorithms_label.grid(row=1, column=0, padx=20, pady=(10, 0))   
+
+self.algorithms_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Autoencoder", "Backpropagation", "Hopfield", "LVQ", "Kohonen SOM"])
+self.algorithms_optionemenu.grid(row=2, column=0, padx=20, pady=(10, 10))
+
+'''
