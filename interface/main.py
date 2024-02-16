@@ -72,53 +72,6 @@ if __name__ == "__main__":
     app.mainloop()
 
 '''
-root = customtkinter.CTk()
-root.title("Test program")
-root.geometry("1080x720")
-
-frame = customtkinter.CTkFrame(master=root)
-frame.pack(pady=20, padx=20, fill="both", expand=True)
-
-logo_label = customtkinter.CTkLabel(
-    master=frame, 
-    text="Custom tester",
-    font=customtkinter.CTkFont(size=20, weight="bold")
-)
-
-logo_label.pack(expand=True, side="top", anchor="nw")
-
-# Create a textbox
-textbox = customtkinter.CTkTextbox(
-    master=frame, 
-    width=150)
-textbox.insert("0.0", "Description" + "The program contains a variety of algorithms")
-textbox.pack(expand=True, side="top", anchor="nw")
-
-def select_file():
-    filetypes = {
-        ('csv files', '*.csv'),
-        ('All files', '*.')
-    }
-    
-    filename =fd.askopenfilename(
-        title ='Open a file',
-        initialdir='/',
-        filetypes=filetypes)
-    
-    showinfo(
-        title='Selected File',
-        message=filename
-    )
-    
-open_button = customtkinter.CTkButton(
-    master=frame, 
-    text="Open a file", 
-    command=select_file
-)
-
-open_button.pack(expand=True, side="top", padx=10, pady=10, anchor="sw")
-
-root.mainloop()
 
 self.algorithms_label = customtkinter.CTkLabel(self.sidebar_frame, text="Algorithm:", anchor="w")
 self.algorithms_label.grid(row=1, column=0, padx=20, pady=(10, 0))   
