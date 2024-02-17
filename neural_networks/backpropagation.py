@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 class Backpropagation:
     def __init__(self, input_neurons, hidden_neurons, output_neurons):
@@ -46,7 +47,7 @@ class Backpropagation:
             #=============BACK PROPAGATION=============
             # Compute the error of the output layer
             output_error = desired_output - obtained_output
-            self.mse = np.mean((output_error))
+            self.mse = np.mean((output_error)**2)
             self.loss.append(self.mse)
             gradient = output_error * self.sigmoid_dev(obtained_output)
             
@@ -79,6 +80,15 @@ class Backpropagation:
         return self.loss, output_activation
 
 
+# Function to plot the loss 
+def plot_loss(loss):
+    plt.plot(range(1, len(loss) + 1), loss, color='blue', label='Mean Square Error')
+    plt.title("Training loss")
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
 # TESTING 
 
 # Input Data
@@ -88,10 +98,8 @@ y_train_bp = np.array([[0], [1], [1], [0]])
 # Learning rate
 alphabp = 0.7
 
-    
 model = Backpropagation(input_neurons=3, hidden_neurons=3, output_neurons=1)
 model.train(X_train_bp, y_train_bp, alphabp)
 
-
-
-
+loss, output_activation = model.test(X_train_bp, y_train_bp)
+plot_loss(loss)
