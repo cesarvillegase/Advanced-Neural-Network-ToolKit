@@ -28,11 +28,11 @@ def neuron(weights, inputs, epoch_max=1000):
     return inputs
 
 
-def plot_patterns(patterns, titles, pattern_shape):
+def plot_patterns(patterns, patterns_wnoise, titles, pattern_shape):
     '''
     Plots subplots of patterns with titles.
     '''
-    num_patterns = len(patterns)
+    num_patterns = len(patterns) + len(patterns_wnoise)
     num_rows, num_columns = pattern_shape
     
     # Create the figure
@@ -41,7 +41,12 @@ def plot_patterns(patterns, titles, pattern_shape):
     # Loop to create the subplots
     for i in range(num_patterns):
         plt.subplot(num_rows, num_columns, i + 1)
-        plt.imshow(patterns[i], cmap='gray')
+        
+        if i < len(patterns):
+            plt.imshow(patterns[i], cmap='gray')
+        else: 
+            plt.imshow(patterns_wnoise[i - (len(patterns))], cmap='gray')
+        
         plt.title(titles[i])
         
     # Adjust the spacing between the suplots
@@ -161,8 +166,8 @@ pattern_3_wn = np.array([
 ])
 
 # Example 
-patterns = [pattern_1, pattern_2, pattern_3, pattern_4, pattern_5, pattern_6, 
-            pattern_1_wn, pattern_2_wn, pattern_3_wn]
+patterns = [pattern_1, pattern_2, pattern_3, pattern_4, pattern_5, pattern_6] 
+patterns_wnoise = [pattern_1_wn, pattern_2_wn, pattern_3_wn]
 
 # Títulos de los subplots
 titles = ["Pattern 1", "Pattern 2", "Pattern 3", "Pattern 4", "Pattern 5", "Pattern 6",
@@ -170,5 +175,7 @@ titles = ["Pattern 1", "Pattern 2", "Pattern 3", "Pattern 4", "Pattern 5", "Patt
 
 pattern_shape = (3, 3)
     
-plot_patterns(patterns, titles, pattern_shape)
-    
+plot_patterns(patterns, patterns_wnoise, titles, pattern_shape)
+
+# To do list
+# Implement this network in a class 
