@@ -30,24 +30,33 @@ class App(customtkinter.CTk):
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="ANN ToolKit", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
         
+        # Create a label and a option menu for the levels of abstraction
         self.levels_of_abstraction_label = customtkinter.CTkLabel(self.sidebar_frame, text="Levels of Abstraction:", anchor="w")
         self.levels_of_abstraction_label.grid(row=3, column=0, padx=20, pady=(10,0))
-        
         self.levels_of_abstraction_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Low Level", "High Level"])
                                                                         #, command=self.change_level_ofabstraction
         self.levels_of_abstraction_optionemenu.grid(row=4, column=0, padx=20, pady=(10, 20))
         
+        # Create a label and a button to open a file
         self.open_file_label = customtkinter.CTkLabel(self.sidebar_frame, text="Open a file:", anchor="w")
         self.open_file_label.grid(row=5, column=0, padx=20, pady=(10, 0))
-        
         self.open_file_button = customtkinter.CTkButton(self.sidebar_frame, text="Open file", bg_color="red", command=self.sidebar_open_button_event, anchor="w")
         self.open_file_button.grid(row=6, column=0, padx=20, pady=(10, 20))
         
+        # Create the label for the author and the description
         self.author_label = customtkinter.CTkLabel(self.sidebar_frame, text="Created by:", font=customtkinter.CTkFont(size=14, weight="normal"))
         self.author_label.grid(row=7, column=0, padx=20, pady=(10,0))
-        
         self.author1_label = customtkinter.CTkLabel(self.sidebar_frame, text="Cesar A Villegas Espindola", font=customtkinter.CTkFont(size=14, weight="normal"))
         self.author1_label.grid(row=8, column=0, padx=20, pady=(10,20))
+
+        # Create tabview
+        self.tabview = customtkinter.CTkTabview(self, width=250)
+        self.tabview.grid(row=0, column=1, padx=(10, 0), pady=(10, 0), sticky="nsew")
+        self.tabview.add("Hopfield")
+        self.tabview.add("Backpropagation")
+        self.tabview.add("Kohonen SOM")
+        self.tabview.add("Autoencoder")
+        self.tabview.add("LVQ")
         
             
     def sidebar_open_button_event(self):
