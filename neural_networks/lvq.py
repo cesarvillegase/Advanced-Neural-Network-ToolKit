@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from sklearn.metrics import accuracy_score
+
 class LVQ:
     def __init__(self):
         self.vectors = None
@@ -66,3 +68,41 @@ def plot(normalized_data, normalized_vectors, y, title, test=False):
         plt.title(title)
         plt.show()
         
+# TESTING    
+
+# Training data
+X_train_lvq = np.array([[5.2, 6.7], [2.0, 3.0], [4.0, 5.0], [7.9, 6.1], [1.0, 2.0], [7.1, 8.9],
+                    [2.0,1.0], [5.1, 7.2], [3.0, 3.0], [7.9, 5.2], [4.0, 5.0], [2.9, 3.2],
+                    [4.1, 5.7], [1.2, 2.8], [7.9, 6.2], [5.2, 6.1], [9.2, 8.1], [2.2,1.1],
+                    [3.98, 2.0], [4.8, 5.2], [9.9, 8.2], [7.1, 5.7], [5.2, 7.9], [7.2, 8.1]])
+
+# Labels
+y_train_lvq = np.array([0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1,
+                       1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0])
+
+# Test data
+X_test_lvq = np.array([[5.0, 8.0], [9.0, 8.0], [2.0, 9.0], [4.0, 8.0], [4.0, 7.0],
+                   [2.0, 6.0], [3.0, 1.0], [1.0, 4.0], [1.0, 1.0], [4.0, 3.0],
+                   [5.9, 6.2], [2.6, 3.2], [4.8, 5.1], [1.7, 2.2], [2.9,1.5],
+                   [4.5, 5.2], [9.0, 8.0], [7.2, 5.9], [5.1, 7.8], [7.2, 8.9]])
+
+# Test labels
+y_test_lvq = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+                            0, 1, 1, 1, 1, 1, 0, 0, 0, 0])
+    
+model = LVQ()
+norm_X_train_lvq = model.norm_data(X_train_lvq)
+norm_vectors = model.init_vectors(norm_X_train_lvq, y_train_lvq)
+plot(X_train_lvq, norm_vectors, y_train_lvq, title='Before the training')
+
+trained_vectors_lvq = model.train(norm_X_train_lvq, y_train_lvq, delta=0.1, epoch_max=500)
+plot(norm_X_train_lvq, trained_vectors_lvq, y_train_lvq, title='After the training')
+
+norm_test_data_lvq = model.norm_data(X_test_lvq)
+labels_predicted_lvq = model.test(norm_test_data_lvq)
+plot(norm_test_data_lvq, trained_vectors_lvq, y_test_lvq, title='Test LVQ', test=True)
+
+accuracy = accuracy_score(y_test_lvq, labels_predicted_lvq)
+print(f"> Accuracy of the model: {accuracy:.2f}")
+print("True labels:", y_test_lvq)
+print("Predicted labels:", labels_predicted_lvq)
