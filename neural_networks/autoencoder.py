@@ -1,9 +1,11 @@
 import numpy as np 
 import matplotlib.pyplot as plt
 
-# @title -> Clase del Autoencoder
 class Autoencoder:
     def __init__(self):
+        self.input_neurons = None
+        self.hidden_neurons = None
+        self.output_neurons = None
         self.epoch = 0
         self.loss = []
 
@@ -27,6 +29,7 @@ class Autoencoder:
 
         w_old_input = np.zeros_like(weights_input)
         w_new_input = np.zeros_like(weights_input)
+
         w_old_output = np.zeros_like(weights_output)
         w_new_output = np.zeros_like(weights_output)
 
@@ -43,7 +46,7 @@ class Autoencoder:
             output = self.sigmoid(output_lyr_input)
 
             output_error = expected_output - output
-            mse = np.mean((output_error)**2)
+            mse = np.mean(output_error ** 2)
             self.loss.append(mse)
             gradient = output_error * self.sigmoid_dev(output)
 
@@ -60,7 +63,7 @@ class Autoencoder:
             w_old_input = weights_input.copy()
             weights_input = w_new_input
 
-            if (self.epoch % 100 == 0):
+            if self.epoch % 100 == 0:
                 print(f"Epoch: {self.epoch} Error: {mse}")
 
             self.epoch += 1
@@ -85,8 +88,11 @@ print(f"\nOriginal Inputs: \n{X_train_ac.flatten()}")
 print(f"\nLatent Space: \n{latent_space}")
 print(f"\nReconstructed Inputs: \n{decoded_inputs_ac}")
 
+def plot_loss(loss_ac):
+    with plt.
+
 plt.plot(range(1, len(loss_ac) + 1), loss_ac, color='orange', label='MSE')
-plt.title("Training for the Autoencoder")
+plt.title("Training for the Auto encoder")
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend()

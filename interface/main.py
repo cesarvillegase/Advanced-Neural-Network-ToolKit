@@ -79,13 +79,3 @@ class App(customtkinter.CTk):
 if __name__ == "__main__":
     app = App()
     app.mainloop()
-
-'''
-
-self.algorithms_label = customtkinter.CTkLabel(self.sidebar_frame, text="Algorithm:", anchor="w")
-self.algorithms_label.grid(row=1, column=0, padx=20, pady=(10, 0))   
-
-self.algorithms_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Autoencoder", "Backpropagation", "Hopfield", "LVQ", "Kohonen SOM"])
-self.algorithms_optionemenu.grid(row=2, column=0, padx=20, pady=(10, 10))
-
-'''
