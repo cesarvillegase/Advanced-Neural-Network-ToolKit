@@ -1,6 +1,8 @@
 import customtkinter
 from tkinter import filedialog as fd
 from tkinter.messagebox import showinfo
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 customtkinter.set_appearance_mode("system")
 customtkinter.set_default_color_theme("blue")
@@ -69,6 +71,20 @@ class App(customtkinter.CTk):
 
         # Hopfield tab
         tab_1 = self.tabview.tab("Hopfield")
+
+        self.label_tab_1 = customtkinter.CTkLabel(tab_1, text="Hopfield Network")
+        self.label_tab_1.grid(row=0, column=0, padx=20, pady=20)
+
+        # To do: Add the area to add images for the input
+        # Create a canvas to display the plot in the Hopfield tab
+        self.canvas_tab_1 = customtkinter.CTkCanvas(tab_1, width=0, height=0)
+        self.canvas_tab_1.grid(row=1, column=1, padx=20, pady=20)
+
+        self.button1_tab_1 = customtkinter.CTkButton(tab_1, fg_color="transparent", border_width=2,
+                                                     text="Generate and Show Plot",
+                                                     text_color=("gray10", "#DCE4EE"),
+                                                     command=self.generate_and_show_plot, anchor="w")
+        self.button1_tab_1.grid(row=2, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         # Backpropagation tab
         tab_2 = self.tabview.tab("Backpropagation")
@@ -197,6 +213,30 @@ class App(customtkinter.CTk):
 
     def exit(self):
         self.destroy()
+
+    def generate_and_show_plot(self):
+        # Example plot generation using Matplotlib
+        x = [1, 2, 3, 4, 5]
+        y = [2, 3, 5, 7, 6]
+
+        # Clear the previous plot if it exists
+        if hasattr(self, 'canvas'):
+            self.canvas.get_tk_widget().destroy()
+            plt.close(self.fig)
+
+        self.fig, self.ax = plt.subplots()
+        self.line, = self.ax.plot(x, y)
+        self.ax.set_xlabel('X-axis Label')
+        self.ax.set_ylabel('Y-axis Label')
+        self.ax.set_title('Sample Plot')
+
+        # Embed the Matplotlib plot into the canvas of the Hopfield tab
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.canvas_tab_1)
+        self.canvas.draw()
+        self.canvas.get_tk_widget().pack(side="right", fill="both", expand=True)
+
+        # Explicitly call plt.show() after updating the canvas
+        plt.show()
 
 
 if __name__ == "__main__":
