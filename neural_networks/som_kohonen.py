@@ -14,17 +14,17 @@ class SOM:
 
     # Function to initialize weights
     @staticmethod
-    def init_weights(num_neurons, inputs):
-        weights = np.random.rand(num_neurons, inputs)
+    def init_weights(num_neurons, input_dim):
+        weights = np.random.rand(num_neurons, input_dim)
         min_weight = np.min(weights)
         max_weight = np.max(weights)
         normalized_weights = (weights - min_weight) / (max_weight - min_weight)
         return normalized_weights
 
     # =============TRAIN PHASE=============
-    def train(self, num_neurons, data, inputs, alpha, epoch_max):
+    def train(self, num_neurons, data, input_dim, alpha, epoch_max):
         normalized_data = self.norm_data(data)
-        normalized_weights = self.init_weights(num_neurons, inputs)
+        normalized_weights = self.init_weights(num_neurons, input_dim)
         for epoch in range(epoch_max):
             for input in normalized_data:
                 # Compute the Euclidean distance
@@ -85,9 +85,10 @@ def generate_data(num_points_p_class, num_classes):
 X_train_som, labels_som = generate_data(num_points_p_class=20, num_classes=2)
 
 model = SOM()
+
 norm_X_train_som = model.norm_data(X_train_som)
-weights_som = model.init_weights(num_neurons=8, inputs=2)
+weights_som = model.init_weights(num_neurons=8, input_dim=2)
 plot(norm_X_train_som, weights_som, title='Before the training')
 
-pretrained_weights_som = model.train(num_neurons=8, data=norm_X_train_som, inputs=2, alpha=0.4, epoch_max=400)
+pretrained_weights_som = model.train(num_neurons=8, data=norm_X_train_som, input_dim = 2, alpha=0.4, epoch_max=400)
 plot(norm_X_train_som, pretrained_weights_som, title='After training')
