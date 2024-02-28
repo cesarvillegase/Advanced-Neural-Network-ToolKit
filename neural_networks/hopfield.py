@@ -1,13 +1,14 @@
-import numpy as np
 import matplotlib.pyplot as plt
-
 import numpy as np
 from PIL import Image
-import matplotlib.pyplot as plt
+
 
 class HopfieldNetwork:
-    def __init__(self, inputs, epoch_max):
-        self.inputs = inputs
+    def __init__(self, data, epoch_max):
+        self.weights_r = None
+        self.weights_g = None
+        self.weights_b = None
+        self.data = data
         self.epoch_max = epoch_max
 
     @staticmethod
@@ -25,40 +26,41 @@ class HopfieldNetwork:
         return weights
 
     @staticmethod
-    def neuron(weights, inputs, epochs=1000):
+    def neuron(weights, data, epochs=1000):
         for i in range(epochs):
-            inputs = np.sign(np.dot(weights, inputs))
+            data = np.sign(np.dot(weights, data))
 
-        return inputs
+        return data
 
     def train(self):
         # Split the inputs into color channels
-        patterns_r = np.array([inp[:, :, 0].flatten() for inp in self.inputs])
-        patterns_g = np.array([inp[:, :, 1].flatten() for inp in self.inputs])
-        patterns_b = np.array([inp[:, :, 2].flatten() for inp in self.inputs])
+        patterns_r = np.array([inp[:, :, 0].flatten() for inp in self.data])
+        patterns_g = np.array([inp[:, :, 1].flatten() for inp in self.data])
+        patterns_b = np.array([inp[:, :, 2].flatten() for inp in self.data])
 
         # Calculate the weight matrices for each color channel
-        self.W_r = self.weights_matrix(patterns_r)
-        self.W_g = self.weights_matrix(patterns_g)
-        self.W_b = self.weights_matrix(patterns_b)
+        self.weights_r = self.weights_matrix(patterns_r)
+        self.weights_g = self.weights_matrix(patterns_g)
+        self.weights_b = self.weights_matrix(patterns_b)
 
-    def reconstruct(self, noisy_inputs):
+    def reconstruct(self, noisy_data):
         rec_images = []
-        for noisy_img in noisy_inputs:
-            rec_img_r = self.neuron(self.W_r, noisy_img[:, :, 0].flatten(), epochs=self.epoch_max).reshape(16, 16)
-            rec_img_g = self.neuron(self.W_g, noisy_img[:, :, 1].flatten(), epochs=self.epoch_max).reshape(16, 16)
-            rec_img_b = self.neuron(self.W_b, noisy_img[:, :, 2].flatten(), epochs=self.epoch_max).reshape(16, 16)
+        for noisy_img in noisy_data:
+            rec_img_r = self.neuron(self.weights_r, noisy_img[:, :, 0].flatten(), epochs=self.epoch_max).reshape(16, 16)
+            rec_img_g = self.neuron(self.weights_g, noisy_img[:, :, 1].flatten(), epochs=self.epoch_max).reshape(16, 16)
+            rec_img_b = self.neuron(self.weights_b, noisy_img[:, :, 2].flatten(), epochs=self.epoch_max).reshape(16, 16)
             rec_img = np.dstack((rec_img_r, rec_img_g, rec_img_b))
             rec_images.append(rec_img)
         return rec_images
 
-img_1_path = "imgs/img_1.png"
-img_2_path = "imgs/img_2.png"
-img_3_path = "imgs/img_3.png"
 
-img_1_wn_path = "imgs/img_1_noisy.png"
-img_2_wn_path = "imgs/img_2_noisy.png"
-img_3_wn_path = "imgs/img_3_noisy.png"
+img_1_path = "images/img_1.png"
+img_2_path = "images/img_2.png"
+img_3_path = "images/img_3.png"
+
+img_1_wn_path = "images/img_1_noisy.png"
+img_2_wn_path = "images/img_2_noisy.png"
+img_3_wn_path = "images/img_3_noisy.png"
 
 img_1 = Image.open(img_1_path)
 img_2 = Image.open(img_2_path)
@@ -98,6 +100,7 @@ hopfield_net.train()
 # Reconstruct images
 reconstructed_images = hopfield_net.reconstruct(noisy_inputs)
 
+
 def plot_images(original_images, noisy_images):
     num_original = int(input("Enter the number of original images to plot: "))
     num_noisy = int(input("Enter the number of noisy images to plot: "))
@@ -105,23 +108,24 @@ def plot_images(original_images, noisy_images):
     # Plotting the images
     plt.figure(figsize=(7, 7))
     for i in range(num_original):
-        plt.subplot(num_original, 3, i*3 + 1)
+        plt.subplot(num_original, 3, i * 3 + 1)
         plt.imshow(original_images[i], cmap='gray')
         plt.title(f"Original Image {i + 1}")
 
     for i in range(num_noisy):
-        plt.subplot(num_noisy, 3, i*3 + 2)
+        plt.subplot(num_noisy, 3, i * 3 + 2)
         plt.imshow(noisy_images[i], cmap='gray')
         plt.title(f"Noisy Image {i + 1}")
 
     for i in range(min(num_original, num_noisy)):
         rec_img = reconstructed_images[i]
-        plt.subplot(min(num_original, num_noisy), 3, i*3 + 3)
+        plt.subplot(min(num_original, num_noisy), 3, i * 3 + 3)
         plt.imshow(rec_img, cmap='gray')
         plt.title(f"Reconstructed Image {i + 1}")
 
     plt.tight_layout()
     plt.show()
+
 
 # Example usage:
 plot_images([img_1_original, img_2_original, img_3_original], [img_1_wn_original, img_2_wn_original, img_3_wn_original])
