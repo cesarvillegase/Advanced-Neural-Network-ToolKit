@@ -73,11 +73,11 @@ class AutoEncoder:
 
             self.epoch += 1
 
-        latent_space = self.sigmoid(np.dot(inputs, weights_input))
-        decoded_inputs = self.sigmoid(np.dot(latent_space, weights_output))
+        latentSpace: float = self.sigmoid(np.dot(inputs, weights_input))
+        decoded_inputs = self.sigmoid(np.dot(latentSpace, weights_output))
         decoded_inputs = (decoded_inputs * 255).astype(int)
 
-        return self.loss, latent_space, decoded_inputs
+        return self.loss, latentSpace, decoded_inputs
 
 
 # TESTING
@@ -95,13 +95,13 @@ print(f"\nLatent Space: \n{latent_space}")
 print(f"\nReconstructed Inputs: \n{decoded_inputs_ac}")
 
 
-def plot_loss(loss_ac):
+def plot_loss(loss_accuracy):
     with plt.style.context('seaborn-v0_8-darkgrid'):
-        plt.plot(range(1, len(loss_ac) + 1), loss_ac, color='orange', label='MSE')
+        plt.plot(range(1, len(loss_accuracy) + 1), loss_accuracy, color='orange', label='MSE')
         plt.title("Training for the Auto encoder")
         plt.xlabel('Epochs')
         plt.ylabel('Loss')
         plt.legend()
         plt.show()
 
-        print(loss_ac[-1])
+        print(loss_accuracy[-1])
