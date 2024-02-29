@@ -50,7 +50,7 @@ class Backpropagation:
             # =============BACK PROPAGATION=============
             # Compute the error of the output layer
             output_error = desired_output - obtained_output
-            self.mse = np.mean((output_error) ** 2)
+            self.mse = np.mean(output_error ** 2)
             self.loss.append(self.mse)
             gradient = output_error * self.sigmoid_dev(obtained_output)
 
