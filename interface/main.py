@@ -22,6 +22,11 @@ class App(customtkinter.CTk):
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
         # Create sidebar frame with widgets
+        self.create_sidebar()
+        # Create tabview
+        self.create_tabview()
+
+    def create_sidebar(self):
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
@@ -59,6 +64,7 @@ class App(customtkinter.CTk):
                                                    command=self.exit, anchor="w")
         self.exit_button.grid(row=8, column=0, padx=20, pady=(10, 20))
 
+    def create_tabview(self):
         # Create tabview
         self.tabview = customtkinter.CTkTabview(self, width=250)
         self.tabview.grid(row=0, column=1, padx=(10, 0), pady=(10, 0), sticky="nsew")
@@ -69,6 +75,13 @@ class App(customtkinter.CTk):
         self.tabview.add("AutoEncoder")
         self.tabview.add("LVQ")
 
+        self.create_tab_1()
+        self.create_tab_2()
+        self.create_tab_3()
+        self.create_tab_4()
+        self.create_tab_5()
+
+    def create_tab_1(self):
         # Hopfield tab
         tab_1 = self.tabview.tab("Hopfield")
 
@@ -77,15 +90,16 @@ class App(customtkinter.CTk):
 
         # To do: Add the area to add images for the input
         # Create a canvas to display the plot in the Hopfield tab
-        self.canvas_tab_1 = customtkinter.CTkCanvas(tab_1, width=0, height=0)
-        self.canvas_tab_1.grid(row=1, column=1, padx=20, pady=20)
-
         self.button1_tab_1 = customtkinter.CTkButton(tab_1, fg_color="transparent", border_width=2,
                                                      text="Generate and Show Plot",
                                                      text_color=("gray10", "#DCE4EE"),
                                                      command=self.generate_and_show_plot, anchor="w")
-        self.button1_tab_1.grid(row=2, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.button1_tab_1.grid(row=1, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
+        self.canvas_tab_1 = customtkinter.CTkCanvas(tab_1, width=0, height=0)
+        self.canvas_tab_1.grid(row=1, column=3, padx=0, pady=0)
+
+    def create_tab_2(self):
         # Backpropagation tab
         tab_2 = self.tabview.tab("Backpropagation")
 
@@ -113,6 +127,7 @@ class App(customtkinter.CTk):
                                                      text="Plot loss", text_color=("gray10", "#DCE4EE"))
         self.button3_tab_2.grid(row=4, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
+    def create_tab_3(self):
         # Kohonen Som tab
         tab_3 = self.tabview.tab("Kohonen SOM")
 
@@ -142,6 +157,7 @@ class App(customtkinter.CTk):
                                                      text="Test Network", text_color=("gray10", "#DCE4EE"))
         self.button2_tab_3.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
+    def create_tab_4(self):
         # Autoencoder tab
         tab_4 = self.tabview.tab("AutoEncoder")
 
@@ -168,6 +184,7 @@ class App(customtkinter.CTk):
                                                      text="Plot loss", text_color=("gray10", "#DCE4EE"))
         self.button2_tab_4.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
+    def create_tab_5(self):
         # LVQ tab
         tab_5 = self.tabview.tab("LVQ")
 
@@ -224,7 +241,7 @@ class App(customtkinter.CTk):
             self.canvas.get_tk_widget().destroy()
             plt.close(self.fig)
 
-        self.fig, self.ax = plt.subplots()
+        self.fig, self.ax = plt.subplots(figsize=(4, 3))
         self.line, = self.ax.plot(x, y)
         self.ax.set_xlabel('X-axis Label')
         self.ax.set_ylabel('Y-axis Label')
