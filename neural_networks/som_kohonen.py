@@ -26,14 +26,14 @@ class SOM:
         normalized_data = self.norm_data(data)
         normalized_weights = self.init_weights(num_neurons, input_dim)
         for epoch in range(epoch_max):
-            for input in normalized_data:
+            for data in normalized_data:
                 # Compute the Euclidean distance
-                distances = np.linalg.norm(normalized_weights - input, axis=1)
+                distances = np.linalg.norm(normalized_weights - data, axis=1)
                 # Winner neuron
                 k = np.argmin(distances)
 
                 # Update the weights of the winner neuron
-                normalized_weights[k] += alpha * (input - normalized_weights[k])
+                normalized_weights[k] += alpha * (data - normalized_weights[k])
 
                 # Update the neighboring neurons
                 for neighbor in range(num_neurons):
@@ -42,7 +42,7 @@ class SOM:
 
                     if dist_tok < 0.7:
                         normalized_weights[neighbor] += alpha * np.exp(-(dist_tok ** 2) / (2 * (alpha ** 2))) * (
-                                    input - normalized_weights[neighbor])
+                                data - normalized_weights[neighbor])
 
         return normalized_weights
 
@@ -76,10 +76,10 @@ def generate_data(num_points_p_class, num_classes):
         data.append(points)
         labels.append(np.full(num_points_p_class, i))
 
-    input = np.vstack(data)
+    data = np.vstack(data)
     y = np.concatenate(labels)
 
-    return input, y
+    return data, y
 
 
 X_train_som, labels_som = generate_data(num_points_p_class=20, num_classes=2)
@@ -90,5 +90,5 @@ norm_X_train_som = model.norm_data(X_train_som)
 weights_som = model.init_weights(num_neurons=8, input_dim=2)
 plot(norm_X_train_som, weights_som, title='Before the training')
 
-pretrained_weights_som = model.train(num_neurons=8, data=norm_X_train_som, input_dim = 2, alpha=0.4, epoch_max=400)
+pretrained_weights_som = model.train(num_neurons=8, data=norm_X_train_som, input_dim=2, alpha=0.4, epoch_max=400)
 plot(norm_X_train_som, pretrained_weights_som, title='After training')
