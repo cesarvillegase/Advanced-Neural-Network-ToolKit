@@ -84,6 +84,8 @@ def generate_data(num_points_p_class, num_classes):
 
 X_train_som, labels_som = generate_data(num_points_p_class=20, num_classes=2)
 
+print(X_train_som)
+
 model = SOM()
 
 norm_X_train_som = model.norm_data(X_train_som)
