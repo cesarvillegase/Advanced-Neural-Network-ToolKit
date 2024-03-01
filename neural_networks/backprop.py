@@ -68,6 +68,8 @@ class Backpropagation:
 
             self.epoch += 1
 
+        print("Training completed.")
+
     # =============TEST PHASE=============
     def test(self, inputs, desired_output):
         global output_activation
@@ -94,6 +96,7 @@ def plot_loss(loss_value):
     plt.show()
 
 
+'''
 # TESTING
 
 # Input Data
@@ -108,3 +111,4 @@ model.train(X_train_bp, y_train_bp, alpha_bp)
 
 loss, output_activation = model.test(X_train_bp, y_train_bp)
 plot_loss(loss)
+'''
