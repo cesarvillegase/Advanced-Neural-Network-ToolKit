@@ -271,7 +271,7 @@ class App(customtkinter.CTk):
             fig = plt.Figure(figsize=(4, 3))
             ax = fig.add_subplot(111)
             ax.plot(range(1, len(loss_values) + 1), loss_values, color='blue', label='Mean Square Error')
-            ax.set_title(" loss")
+            ax.set_title("Training loss")
             ax.set_xlabel('Epochs')
             ax.set_ylabel('Loss')
             ax.legend()
