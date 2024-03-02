@@ -18,7 +18,7 @@ class App(customtkinter.CTk):
 
         # Configure window
         self.title("Advanced Neural Network ToolKit")
-        self.geometry(f"{1100}x{580}")
+        self.geometry(f"{1280}x{640}")
 
         # Configure grid
         self.grid_columnconfigure(1, weight=1)
@@ -80,7 +80,7 @@ class App(customtkinter.CTk):
         self.tabview.add("LVQ")
 
         self.create_tab_1()
-        self.create_tab_2
+        self.create_tab_2()
         self.create_tab_3()
         self.create_tab_4()
         self.create_tab_5()
@@ -103,7 +103,6 @@ class App(customtkinter.CTk):
         self.canvas_tab_1 = customtkinter.CTkCanvas(tab_1, width=0, height=0)
         self.canvas_tab_1.grid(row=1, column=3, padx=0, pady=0)
 
-    @property
     def create_tab_2(self):
         # Backpropagation tab
         tab_2 = self.tabview.tab("Backpropagation")
@@ -282,8 +281,8 @@ class App(customtkinter.CTk):
             canvas.draw()
             canvas.get_tk_widget().pack(fill='both', expand=True)
 
-        self.canvas_tab_2 = customtkinter.CTkCanvas(tab_2, width=0, height=0)
-        self.canvas_tab_2.grid(row=1, column=2, padx=0, pady=0)
+        self.canvas_tab_2 = customtkinter.CTkCanvas(tab_2, width=400, height=300)
+        self.canvas_tab_2.grid(row=1, column=2, padx=(30, 0), pady=(0))
 
         self.button3_tab_2 = customtkinter.CTkButton(tab_2, fg_color="transparent", border_width=2,
                                                      text="Plot loss", text_color=("gray10", "#DCE4EE"),
