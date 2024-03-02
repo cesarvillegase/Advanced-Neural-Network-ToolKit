@@ -267,14 +267,9 @@ class App(customtkinter.CTk):
             # Clear the previous plot, if any
             self.canvas_tab_2.delete("all")
 
-            # Clear the previous plot if it exists
-            if hasattr(self, 'canvas'):
-                self.canvas.get_tk_widget().destroy()
-                plt.close(self.fig)
-
             # Create a new figure for the plot
-            self.fig = plt.Figure(figsize=(4, 3))
-            ax = self.fig.add_subplot(111)
+            fig = plt.Figure(figsize=(4, 3))
+            ax = fig.add_subplot(111)
             ax.plot(range(1, len(loss_values) + 1), loss_values, color='blue', label='Mean Square Error')
             ax.set_title("Training loss")
             ax.set_xlabel('Epochs')
@@ -282,9 +277,9 @@ class App(customtkinter.CTk):
             ax.legend()
 
             # Embed the plot into the Tkinter canvas
-            self.canvas = FigureCanvasTkAgg(self.fig, master=self.canvas_tab_2)
-            self.canvas.draw()
-            self.canvas.get_tk_widget().pack(fill='both', expand=True)
+            canvas = FigureCanvasTkAgg(fig, master=self.canvas_tab_2)
+            canvas.draw()
+            canvas.get_tk_widget().pack(fill='both', expand=True)
 
         self.canvas_tab_2 = customtkinter.CTkCanvas(tab_2, width=400, height=300)
         self.canvas_tab_2.grid(row=1, column=2, padx=(30, 0), pady=(0))
