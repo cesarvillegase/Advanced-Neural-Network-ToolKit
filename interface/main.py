@@ -1,13 +1,19 @@
-import customtkinter
 from tkinter import filedialog as fd, StringVar
 from tkinter.messagebox import showinfo
+
+import customtkinter
 import matplotlib.pyplot as plt
+import numpy as np
+from customtkinter import CTkRadioButton
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-import numpy as np
-
-from neural_networks.backprop import Backpropagation, plot_loss
+# from neural_networks.hopfield import Hopfield
+from neural_networks.backprop import Backpropagation
+from neural_networks.hopfield import Hopfield
 from neural_networks.som_kohonen import SOM
+from neural_networks.autoencoder import AutoEncoder
+
+# from neural_networks.lvq import LVQ
 
 customtkinter.set_appearance_mode("system")
 customtkinter.set_default_color_theme("blue")
@@ -36,33 +42,43 @@ class App(customtkinter.CTk):
                                                  font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
-        # Create a label and an option menu for the levels of abstraction
-        self.levels_of_abstraction_label = customtkinter.CTkLabel(self.sidebar_frame, text="Levels of Abstraction:",
+        # Label for the levels of abstraction
+        self.levels_of_abstraction_label = customtkinter.CTkLabel(self.sidebar_frame, text="Levels:",
                                                                   anchor="w")
-        self.levels_of_abstraction_label.grid(row=2, column=0, padx=20, pady=(10, 0))
-        self.levels_of_abstraction_option_menu = customtkinter.CTkOptionMenu(self.sidebar_frame,
-                                                                             values=["Low Level", "High Level"])
-        # , command=self.change_level_of_abstraction
-        self.levels_of_abstraction_option_menu.grid(row=3, column=0, padx=20, pady=(10, 20))
+        self.levels_of_abstraction_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
+
+        # Variable to store the level of abstraction choice
+        self.abstraction_level_var = customtkinter.StringVar(
+            value="Low Level")  # Default value can be "Low Level" or "High Level"
+
+        # Radio button for Low Level
+        self.low_level_radio = CTkRadioButton(self.sidebar_frame, text="Low-Level",
+                                              variable=self.abstraction_level_var, value="Low Level")
+        self.low_level_radio.grid(row=2, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        # Radio button for High Level
+        self.high_level_radio = CTkRadioButton(self.sidebar_frame, text="High-Level",
+                                               variable=self.abstraction_level_var, value="High Level")
+        self.high_level_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # Create a label and a button to open a file
-        self.open_file_label = customtkinter.CTkLabel(self.sidebar_frame, text="Open a file:", anchor="w")
-        self.open_file_label.grid(row=4, column=0, padx=20, pady=(10, 0))
-        self.open_file_button = customtkinter.CTkButton(self.sidebar_frame, text="Open file",
-                                                        command=self.sidebar_open_button_event, anchor="w")
-        self.open_file_button.grid(row=5, column=0, padx=20, pady=(10, 20))
+        # self.open_file_label = customtkinter.CTkLabel(self.sidebar_frame, text="Open a file:", anchor="w")
+        # self.open_file_label.grid(row=5, column=0, padx=20, pady=(10, 0))
+        # self.open_file_button = customtkinter.CTkButton(self.sidebar_frame, text="Open file",
+        #                                              command=self.sidebar_open_button_event, anchor="w")
+        # self.open_file_button.grid(row=6, column=0, padx=20, pady=(10, 20))
 
         # Create the label for the author and the description
         self.author_label = customtkinter.CTkLabel(self.sidebar_frame, text="Created by:",
                                                    font=customtkinter.CTkFont(size=14, weight="normal"))
-        self.author_label.grid(row=6, column=0, padx=20, pady=(10, 0))
+        self.author_label.grid(row=4, column=0, padx=20, pady=(10, 0))
         self.author1_label = customtkinter.CTkLabel(self.sidebar_frame, text="Cesar A Villegas Espindola",
                                                     font=customtkinter.CTkFont(size=14, weight="normal"))
-        self.author1_label.grid(row=7, column=0, padx=20, pady=(10, 20))
+        self.author1_label.grid(row=5, column=0, padx=20, pady=(10, 20))
 
         self.exit_button = customtkinter.CTkButton(self.sidebar_frame, fg_color="red", text="Close App",
                                                    command=self.exit, anchor="w")
-        self.exit_button.grid(row=8, column=0, padx=20, pady=(10, 20))
+        self.exit_button.grid(row=6, column=0, padx=20, pady=(10, 20))
 
         # Create tabview
         self.tabview = customtkinter.CTkTabview(self, width=250)
@@ -80,16 +96,88 @@ class App(customtkinter.CTk):
         self.label_tab_1 = customtkinter.CTkLabel(tab_1, text="Hopfield Network")
         self.label_tab_1.grid(row=0, column=0, padx=20, pady=20)
 
+        epoch_max_hop = StringVar()
+        num_og_images = StringVar()
+        num_noisy_images = StringVar()
+
+        def entry_epoch_max_hop():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = epoch_max_hop.get()
+                    # Convert the input value to a float
+                    epoch_max_hop_value = int(input_value_str)
+                    # Use the learning_rate_value here
+                    print("Epoch max:", epoch_max_hop_value)
+                except ValueError:
+                    print("Invalid Epoch max format")
+
+            # Use learning_rate as the text variable for the entry widget
+            self.entry_epoch_max_hop = customtkinter.CTkEntry(tab_1, placeholder_text="Epoch max",
+                                                              textvariable=epoch_max_hop)
+            self.entry_epoch_max_hop.grid(row=1, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            epoch_max_hop.trace("w", parse_entry)
+
+        entry_epoch_max_hop()
+
+        self.hopfield_model = Hopfield(input, epoch_max=epoch_max_hop)
+
+        def entry_num_og_images():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = num_og_images.get()
+                    # Convert the input value to a float
+                    num_og_images_value = int(input_value_str)
+                    # Use the learning_rate_value here
+                    print("Number of original images:", num_og_images_value)
+                except ValueError:
+                    print("Invalid Number of original images format")
+
+            # Use learning_rate as the text variable for the entry widget
+            self.entry_num_og_images = customtkinter.CTkEntry(tab_1, placeholder_text="Num of original images",
+                                                              textvariable=num_og_images)
+            self.entry_num_og_images.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            num_og_images.trace("w", parse_entry)
+
+        def entry_num_noisy_images():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = num_noisy_images.get()
+                    # Convert the input value to an integer
+                    num_noisy_images_value = int(input_value_str)
+                    # Use the num_noisy_images_value here
+                    print("Number of noisy images:", num_noisy_images_value)
+                except ValueError:
+                    print("Invalid Number of noisy images format")
+
+            # Use learning_rate as the text variable for the entry widget
+            self.entry_num_noisy_images = customtkinter.CTkEntry(tab_1, placeholder_text="Num of noisy images",
+                                                              textvariable=num_noisy_images)
+            self.entry_num_noisy_images.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            num_noisy_images.trace("w", parse_entry)
+
+        entry_num_og_images()
+        entry_num_noisy_images()
+
+
         # To do: Add the area to add images for the input
         # Create a canvas to display the plot in the Hopfield tab
         self.button1_tab_1 = customtkinter.CTkButton(tab_1, fg_color="transparent", border_width=2,
-                                                     text="Generate and Show Plot",
+                                                     text="Train algorithm",
                                                      text_color=("gray10", "#DCE4EE"),
-                                                     command=self.generate_and_show_plot, anchor="w")
-        self.button1_tab_1.grid(row=1, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+                                                     anchor="w")  # , command=self.generate_and_show_plot
+        self.button1_tab_1.grid(row=4, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         self.canvas_tab_1 = customtkinter.CTkCanvas(tab_1, width=0, height=0)
-        self.canvas_tab_1.grid(row=1, column=3, padx=0, pady=0)
+        self.canvas_tab_1.grid(row=3, column=2, padx=0, pady=0)
 
         # ########### 2nd Tab ###########
         tab_2 = self.tabview.tab("Backpropagation")
@@ -100,11 +188,11 @@ class App(customtkinter.CTk):
         # Instantiate an object of the Backpropagation class
         self.backpropagation_model = Backpropagation(input_neurons=3, hidden_neurons=3, output_neurons=1)
 
-        input_ = StringVar()
-        desired_output_ = StringVar()
-        learning_rate_ = StringVar()
+        input_bp = StringVar()
+        desired_output_bp = StringVar()
+        learning_rate_bp = StringVar()
 
-        def entry_1_tab_2():
+        def entry_input_bp():
             def parse_input_string(input_string):
                 # Remove brackets and split the string into individual elements
                 elements = input_string.replace("[", "").replace("]", "").split(",")
@@ -134,16 +222,16 @@ class App(customtkinter.CTk):
                     print("Invalid input format")
 
             def print_input_as_list(*args):
-                input_value_str = input_.get()
+                input_value_str = input_bp.get()
                 input_list_parsed = parse_input_string(input_value_str)
                 print_input_list(input_list_parsed)
 
-            self.entry1_tab_2 = customtkinter.CTkEntry(tab_2, placeholder_text="Input", textvariable=input_)
-            self.entry1_tab_2.grid(row=1, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+            self.entry_input_bp = customtkinter.CTkEntry(tab_2, placeholder_text="Input", textvariable=input_bp)
+            self.entry_input_bp.grid(row=1, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
-            input_.trace("w", print_input_as_list)
+            input_bp.trace("w", print_input_as_list)
 
-        def entry_2_tab_2():
+        def entry_desired_output_bp():
             def parse_input_string(input_string):
                 # Remove brackets and split the string into individual elements
                 elements = input_string.replace("[", "").replace("]", "").split(",")
@@ -166,23 +254,23 @@ class App(customtkinter.CTk):
                     print("Invalid input format")
 
             def print_input_as_list(*args):
-                input_value_str = desired_output_.get()
+                input_value_str = desired_output_bp.get()
                 input_list_parsed = parse_input_string(input_value_str)
                 print_input_list(input_list_parsed)
 
             # Use desired_output as the text variable for the entry widget
-            self.entry2_tab_2 = customtkinter.CTkEntry(tab_2, placeholder_text="Desired output",
-                                                       textvariable=desired_output_)
-            self.entry2_tab_2.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+            self.entry_desired_output_bp = customtkinter.CTkEntry(tab_2, placeholder_text="Desired output",
+                                                                  textvariable=desired_output_bp)
+            self.entry_desired_output_bp.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
-            desired_output_.trace("w", print_input_as_list)
+            desired_output_bp.trace("w", print_input_as_list)
 
-        def entry_3_tab_2():
+        def entry_learning_rate_bp():
             def parse_entry(*args):
                 try:
                     # Get the input value from the entry widget
-                    input_value_str = learning_rate_.get()
+                    input_value_str = learning_rate_bp.get()
                     # Convert the input value to a float
                     learning_rate_value = float(input_value_str)
                     # Use the learning_rate_value here
@@ -191,20 +279,21 @@ class App(customtkinter.CTk):
                     print("Invalid learning rate format")
 
             # Use learning_rate as the text variable for the entry widget
-            entry3_tab_2 = customtkinter.CTkEntry(tab_2, placeholder_text="Learning rate", textvariable=learning_rate_)
-            entry3_tab_2.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+            self.entry_learning_rate_bp = customtkinter.CTkEntry(tab_2, placeholder_text="Learning rate",
+                                                                 textvariable=learning_rate_bp)
+            self.entry_learning_rate_bp.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
-            learning_rate_.trace("w", parse_entry)
+            learning_rate_bp.trace("w", parse_entry)
 
-        entry_1_tab_2()
-        entry_2_tab_2()
-        entry_3_tab_2()
+        entry_input_bp()
+        entry_desired_output_bp()
+        entry_learning_rate_bp()
 
         def train_backprop():
-            input_data_str = input_.get()  # This is a string; you'll need to convert it to a numpy array
-            desired_output_str = desired_output_.get()  # Also a string to convert
-            learning_rate_str = learning_rate_.get()  # And this is a string to convert to float
+            input_data_str = input_bp.get()  # This is a string; you'll need to convert it to a numpy array
+            desired_output_str = desired_output_bp.get()  # Also a string to convert
+            learning_rate_str = epoch_max_hop.get()  # And this is a string to convert to float
 
             # Convert the string representations to the appropriate types
             try:
@@ -219,15 +308,15 @@ class App(customtkinter.CTk):
             except Exception as e:
                 print(f"An error occurred: {e}")
 
-        self.button1_tab_2 = customtkinter.CTkButton(tab_2, fg_color="transparent", border_width=2,
-                                                     text="Train Network", text_color=("gray10", "#DCE4EE"),
-                                                     command=train_backprop)
+        self.button_train_bp = customtkinter.CTkButton(tab_2, fg_color="transparent", border_width=2,
+                                                       text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                                       command=train_backprop)
 
-        self.button1_tab_2.grid(row=4, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.button_train_bp.grid(row=4, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         def test_backprop():
-            input_data_str = input_.get()  # This is a string; you'll need to convert it to a numpy array
-            desired_output_str = desired_output_.get()  # Also a string to convert
+            input_data_str = input_bp.get()  # This is a string; you'll need to convert it to a numpy array
+            desired_output_str = desired_output_bp.get()  # Also a string to convert
 
             # Convert the string representations to the appropriate types
             try:
@@ -241,10 +330,10 @@ class App(customtkinter.CTk):
             except Exception as e:
                 print(f"An error occurred: {e}")
 
-        self.button2_tab_2 = customtkinter.CTkButton(tab_2, fg_color="transparent", border_width=2,
-                                                     text="Test Network", text_color=("gray10", "#DCE4EE"),
-                                                     command=test_backprop)
-        self.button2_tab_2.grid(row=4, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.button_test_bp = customtkinter.CTkButton(tab_2, fg_color="transparent", border_width=2,
+                                                      text="Test Network", text_color=("gray10", "#DCE4EE"),
+                                                      command=test_backprop)
+        self.button_test_bp.grid(row=4, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         # Plot loss
         def plot_loss_from_test():
@@ -276,10 +365,10 @@ class App(customtkinter.CTk):
         self.canvas_tab_2 = customtkinter.CTkCanvas(tab_2, width=400, height=300)
         self.canvas_tab_2.grid(row=1, column=2, padx=(30, 0), pady=0)
 
-        self.button3_tab_2 = customtkinter.CTkButton(tab_2, fg_color="transparent", border_width=2,
-                                                     text="Plot loss", text_color=("gray10", "#DCE4EE"),
-                                                     command=plot_loss_from_test)
-        self.button3_tab_2.grid(row=4, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.button_loss_bp = customtkinter.CTkButton(tab_2, fg_color="transparent", border_width=2,
+                                                      text="Plot loss", text_color=("gray10", "#DCE4EE"),
+                                                      command=plot_loss_from_test)
+        self.button_loss_bp.grid(row=4, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         # ########### 3rd Tab ###########
         tab_3 = self.tabview.tab("Kohonen SOM")
@@ -289,8 +378,9 @@ class App(customtkinter.CTk):
 
         self.som_kohonen_model = SOM()
 
-        input_som_dim = StringVar()
-        num_of_neurons = StringVar()
+        num_of_neurons_som = StringVar()
+        input_dim_som = StringVar()
+        data_som = StringVar()
         lr_som = StringVar()
         epoch_max_som = StringVar()
 
@@ -298,7 +388,7 @@ class App(customtkinter.CTk):
             def parse_entry(*args):
                 try:
                     # Get the input value from the entry widget
-                    input_value_str = input_som_dim.get()
+                    input_value_str = input_dim_som.get()
                     # Convert the input value to a float
                     input_dim_value = int(input_value_str)
                     # Use the input_dim_value here
@@ -307,17 +397,17 @@ class App(customtkinter.CTk):
                     print("Invalid input dimension format")
 
             self.entry1_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Input Dimension",
-                                                       textvariable=input_som_dim)
+                                                       textvariable=input_dim_som)
             self.entry1_tab_3.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
-            input_som_dim.trace("w", parse_entry)
+            input_dim_som.trace("w", parse_entry)
 
         def entry2_tab3():
             def parse_entry(*args):
                 try:
                     # Get the input value from the entry widget
-                    input_value_str = num_of_neurons.get()
+                    input_value_str = num_of_neurons_som.get()
                     # Convert the input value to a float
                     num_of_neurons_value = int(input_value_str)
                     # Use the input_dim_value here
@@ -326,11 +416,11 @@ class App(customtkinter.CTk):
                     print("Invalid number of neurons format")
 
             self.entry2_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Num of neurons",
-                                                       textvariable=num_of_neurons)
+                                                       textvariable=num_of_neurons_som)
             self.entry2_tab_3.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
-            num_of_neurons.trace("w", parse_entry)
+            num_of_neurons_som.trace("w", parse_entry)
 
         def entry3_tab3():
             def parse_entry(*args):
@@ -387,6 +477,14 @@ class App(customtkinter.CTk):
 
         # ########### 4th Tab ###########
         tab_4 = self.tabview.tab("AutoEncoder")
+
+        # Instantiate an object of the Backpropagation class
+        self.autoencoder_model = AutoEncoder()
+
+        input_ac = StringVar()
+        learning_rate_ac = StringVar()
+        momentum_ac = StringVar()
+        epoch_max_ac = StringVar()
 
         self.label_tab_4 = customtkinter.CTkLabel(tab_4, text="AutoEncoder Network")
         self.label_tab_4.grid(row=0, column=0, padx=20, pady=20)
