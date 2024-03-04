@@ -7,6 +7,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 
 from neural_networks.backprop import Backpropagation, plot_loss
+from neural_networks.som_kohonen import SOM
 
 customtkinter.set_appearance_mode("system")
 customtkinter.set_default_color_theme("blue")
@@ -26,11 +27,6 @@ class App(customtkinter.CTk):
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
         # Create sidebar frame with widgets
-        self.create_sidebar()
-        # Create tabview
-        self.create_tabview()
-
-    def create_sidebar(self):
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
@@ -68,7 +64,6 @@ class App(customtkinter.CTk):
                                                    command=self.exit, anchor="w")
         self.exit_button.grid(row=8, column=0, padx=20, pady=(10, 20))
 
-    def create_tabview(self):
         # Create tabview
         self.tabview = customtkinter.CTkTabview(self, width=250)
         self.tabview.grid(row=0, column=1, padx=(10, 0), pady=(10, 0), sticky="nsew")
@@ -79,14 +74,7 @@ class App(customtkinter.CTk):
         self.tabview.add("AutoEncoder")
         self.tabview.add("LVQ")
 
-        self.create_tab_1()
-        self.create_tab_2()
-        self.create_tab_3()
-        self.create_tab_4()
-        self.create_tab_5()
-
-    def create_tab_1(self):
-        # Hopfield tab
+        # ########### 1st Tab ###########
         tab_1 = self.tabview.tab("Hopfield")
 
         self.label_tab_1 = customtkinter.CTkLabel(tab_1, text="Hopfield Network")
@@ -103,15 +91,14 @@ class App(customtkinter.CTk):
         self.canvas_tab_1 = customtkinter.CTkCanvas(tab_1, width=0, height=0)
         self.canvas_tab_1.grid(row=1, column=3, padx=0, pady=0)
 
-    def create_tab_2(self):
-        # Backpropagation tab
+        # ########### 2nd Tab ###########
         tab_2 = self.tabview.tab("Backpropagation")
 
         self.label_tab_2 = customtkinter.CTkLabel(tab_2, text="Backpropagation Network")
         self.label_tab_2.grid(row=0, column=0, padx=20, pady=20)
 
         # Instantiate an object of the Backpropagation class
-        self.backpropagation_model = Backpropagation(input_neurons=3,hidden_neurons=3, output_neurons=1)
+        self.backpropagation_model = Backpropagation(input_neurons=3, hidden_neurons=3, output_neurons=1)
 
         input_ = StringVar()
         desired_output_ = StringVar()
@@ -119,7 +106,7 @@ class App(customtkinter.CTk):
 
         def entry_1_tab_2():
             def parse_input_string(input_string):
-                # Remove brackets and split the string into indivual elements
+                # Remove brackets and split the string into individual elements
                 elements = input_string.replace("[", "").replace("]", "").split(",")
 
                 # Convert elements to integers
@@ -129,16 +116,16 @@ class App(customtkinter.CTk):
                     return None
 
                 # Determine the sublist length based on the number of elements
-                sublist_length = len(elements) // 4  # Assuming there are four sublists in the input
+                sublist_length = len(elements) // 4  # Assuming there are four sub lists in the input
 
                 # Check if the number of elements is divisible by the calculated sublist_length
                 if len(elements) % sublist_length != 0:
                     return None
 
                 # Create sublist
-                sublists = [elements[i:i + sublist_length] for i in range(0, len(elements), sublist_length)]
+                sub_lists = [elements[i:i + sublist_length] for i in range(0, len(elements), sublist_length)]
 
-                return sublists
+                return sub_lists
 
             def print_input_list(input_list):
                 if input_list is not None:
@@ -168,9 +155,9 @@ class App(customtkinter.CTk):
                     return None
 
                 # Check if each element forms a single-element sublist
-                sublists = [[element] for element in elements]
+                sub_lists = [[element] for element in elements]
 
-                return sublists
+                return sub_lists
 
             def print_input_list(input_list):
                 if input_list is not None:
@@ -183,12 +170,12 @@ class App(customtkinter.CTk):
                 input_list_parsed = parse_input_string(input_value_str)
                 print_input_list(input_list_parsed)
 
-            # Use desired_output as the textvariable for the entry widget
+            # Use desired_output as the text variable for the entry widget
             self.entry2_tab_2 = customtkinter.CTkEntry(tab_2, placeholder_text="Desired output",
                                                        textvariable=desired_output_)
             self.entry2_tab_2.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
-            # Attach the trace callback to the textvariable
+            # Attach the trace callback to the text variable
             desired_output_.trace("w", print_input_as_list)
 
         def entry_3_tab_2():
@@ -203,11 +190,11 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid learning rate format")
 
-            # Use learning_rate as the textvariable for the entry widget
+            # Use learning_rate as the text variable for the entry widget
             entry3_tab_2 = customtkinter.CTkEntry(tab_2, placeholder_text="Learning rate", textvariable=learning_rate_)
             entry3_tab_2.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
-            # Attach the trace callback to the textvariable
+            # Attach the trace callback to the text variable
             learning_rate_.trace("w", parse_entry)
 
         entry_1_tab_2()
@@ -287,45 +274,118 @@ class App(customtkinter.CTk):
             self.canvas.get_tk_widget().pack(fill='both', expand=True)
 
         self.canvas_tab_2 = customtkinter.CTkCanvas(tab_2, width=400, height=300)
-        self.canvas_tab_2.grid(row=1, column=2, padx=(30, 0), pady=(0))
+        self.canvas_tab_2.grid(row=1, column=2, padx=(30, 0), pady=0)
 
         self.button3_tab_2 = customtkinter.CTkButton(tab_2, fg_color="transparent", border_width=2,
                                                      text="Plot loss", text_color=("gray10", "#DCE4EE"),
                                                      command=plot_loss_from_test)
         self.button3_tab_2.grid(row=4, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
-    def create_tab_3(self):
-        # Kohonen Som tab
+        # ########### 3rd Tab ###########
         tab_3 = self.tabview.tab("Kohonen SOM")
 
         self.label_tab_3 = customtkinter.CTkLabel(tab_3, text="Kohonen SOM Network")
         self.label_tab_3.grid(row=0, column=0, padx=20, pady=20)
 
-        self.entry1_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Input")
-        self.entry1_tab_3.grid(row=1, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+        self.som_kohonen_model = SOM()
 
-        self.entry2_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Input Dimension")
-        self.entry2_tab_3.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+        input_som_dim = StringVar()
+        num_of_neurons = StringVar()
+        lr_som = StringVar()
+        epoch_max_som = StringVar()
 
-        self.entry3_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Num of neurons")
-        self.entry3_tab_3.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+        def entry1_tab3():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = input_som_dim.get()
+                    # Convert the input value to a float
+                    input_dim_value = int(input_value_str)
+                    # Use the input_dim_value here
+                    print("Input dimension:", input_dim_value)
+                except ValueError:
+                    print("Invalid input dimension format")
 
-        self.entry4_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Learning rate")
-        self.entry4_tab_3.grid(row=4, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+            self.entry1_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Input Dimension",
+                                                       textvariable=input_som_dim)
+            self.entry1_tab_3.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
-        self.entry5_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Epoch max")
-        self.entry5_tab_3.grid(row=5, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+            # Attach the trace callback to the text variable
+            input_som_dim.trace("w", parse_entry)
+
+        def entry2_tab3():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = num_of_neurons.get()
+                    # Convert the input value to a float
+                    num_of_neurons_value = int(input_value_str)
+                    # Use the input_dim_value here
+                    print("Number of neurons:", num_of_neurons_value)
+                except ValueError:
+                    print("Invalid number of neurons format")
+
+            self.entry2_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Num of neurons",
+                                                       textvariable=num_of_neurons)
+            self.entry2_tab_3.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            num_of_neurons.trace("w", parse_entry)
+
+        def entry3_tab3():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = lr_som.get()
+                    # Convert the input value to a float
+                    lr_som_value = float(input_value_str)
+                    # Use the input_dim_value here
+                    print("Learning rate:", lr_som_value)
+                except ValueError:
+                    print("Invalid learning rate format")
+
+            self.entry3_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Learning rate",
+                                                       textvariable=lr_som)
+            self.entry3_tab_3.grid(row=4, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            lr_som.trace("w", parse_entry)
+
+        def entry4_tab3():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = epoch_max_som.get()
+                    # Convert the input value to a float
+                    epoch_max_value = int(input_value_str)
+                    # Use the input_dim_value here
+                    print("Epoch max:", epoch_max_value)
+                except ValueError:
+                    print("Invalid epoch max format")
+
+            self.entry4_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Epoch max", textvariable=epoch_max_som)
+            self.entry4_tab_3.grid(row=5, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            epoch_max_som.trace("w", parse_entry)
+
+        def train_som():
+            pass
+
+        entry1_tab3()
+        entry2_tab3()
+        entry3_tab3()
+        entry4_tab3()
 
         self.button1_tab_3 = customtkinter.CTkButton(tab_3, fg_color="transparent", border_width=2,
                                                      text="Train Network", text_color=("gray10", "#DCE4EE"))
         self.button1_tab_3.grid(row=6, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         self.button2_tab_3 = customtkinter.CTkButton(tab_3, fg_color="transparent", border_width=2,
-                                                     text="Test Network", text_color=("gray10", "#DCE4EE"))
+                                                     text="Plot results", text_color=("gray10", "#DCE4EE"))
         self.button2_tab_3.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
-    def create_tab_4(self):
-        # Autoencoder tab
+        # ########### 4th Tab ###########
         tab_4 = self.tabview.tab("AutoEncoder")
 
         self.label_tab_4 = customtkinter.CTkLabel(tab_4, text="AutoEncoder Network")
@@ -351,8 +411,7 @@ class App(customtkinter.CTk):
                                                      text="Plot loss", text_color=("gray10", "#DCE4EE"))
         self.button2_tab_4.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
-    def create_tab_5(self):
-        # LVQ tab
+        # ########### 5th Tab ###########
         tab_5 = self.tabview.tab("LVQ")
 
         self.label_tab_5 = customtkinter.CTkLabel(tab_5, text="LVQ Network")
@@ -397,30 +456,6 @@ class App(customtkinter.CTk):
 
     def exit(self):
         self.destroy()
-
-    def generate_and_show_plot(self):
-        # Example plot generation using Matplotlib
-        x = [1, 2, 3, 4, 5]
-        y = [2, 3, 5, 7, 6]
-
-        # Clear the previous plot if it exists
-        if hasattr(self, 'canvas'):
-            self.canvas.get_tk_widget().destroy()
-            plt.close(self.fig)
-
-        self.fig, self.ax = plt.subplots(figsize=(4, 3))
-        self.line, = self.ax.plot(x, y)
-        self.ax.set_xlabel('X-axis Label')
-        self.ax.set_ylabel('Y-axis Label')
-        self.ax.set_title('Sample Plot')
-
-        # Embed the Matplotlib plot into the canvas of the Hopfield tab
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.canvas_tab_1)
-        self.canvas.draw()
-        self.canvas.get_tk_widget().pack(side="right", fill="both", expand=True)
-
-        # Explicitly call plt.show() after updating the canvas
-        plt.show()
 
 
 if __name__ == "__main__":
