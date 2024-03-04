@@ -31,10 +31,10 @@ class AutoEncoder:
         weights_output = 2 * np.random.random((self.hidden_neurons, self.output_neurons)) - 1
 
         w_old_input = np.zeros_like(weights_input)
-        # w_new_input = np.zeros_like(weights_input)
+        w_new_input = np.zeros_like(weights_input)
 
         w_old_output = np.zeros_like(weights_output)
-        # w_new_output = np.zeros_like(weights_output)
+        w_new_output = np.zeros_like(weights_output)
 
         mse = float(2)
         prev_mse = float(0)
@@ -73,15 +73,15 @@ class AutoEncoder:
 
             self.epoch += 1
 
-        latentSpace: float = self.sigmoid(np.dot(inputs, weights_input))
-        decoded_inputs = self.sigmoid(np.dot(latentSpace, weights_output))
+        latent_space: float = self.sigmoid(np.dot(inputs, weights_input))
+        decoded_inputs = self.sigmoid(np.dot(latent_space, weights_output))
         decoded_inputs = (decoded_inputs * 255).astype(int)
 
-        return self.loss, latentSpace, decoded_inputs
+        return self.loss, latent_space, decoded_inputs
 
 
 # TESTING
-
+'''
 X_train_ac = np.array([[123, 32, 24], [72, 204, 52], [145, 56, 91]])
 alpha_ac = 0.9  # alpha = 1
 momentum_ac = 0.4  # Momentum = 0.4
@@ -105,3 +105,4 @@ def plot_loss(loss_accuracy):
         plt.show()
 
         print(loss_accuracy[-1])
+'''
