@@ -22,9 +22,9 @@ class SOM:
         return normalized_weights
 
     # =============TRAIN PHASE=============
-    def train(self, num_neurons, data, input_dim, alpha, epoch_max):
-        normalized_data = self.norm_data(data)
+    def train(self, num_neurons, input_dim, data, alpha, epoch_max):
         normalized_weights = self.init_weights(num_neurons, input_dim)
+        normalized_data = self.norm_data(data)
         for epoch in range(epoch_max):
             for data in normalized_data:
                 # Compute the Euclidean distance
@@ -40,7 +40,7 @@ class SOM:
                     # Compute the distance from the winner neuron
                     dist_tok = np.linalg.norm(normalized_weights[neighbor] - normalized_weights[k])
 
-                    if dist_tok < 0.7:
+                    if dist_tok < 0.5:
                         normalized_weights[neighbor] += alpha * np.exp(-(dist_tok ** 2) / (2 * (alpha ** 2))) * (
                                 data - normalized_weights[neighbor])
 
@@ -82,6 +82,7 @@ def generate_data(num_points_p_class, num_classes):
     return data, y
 
 
+'''
 X_train_som, labels_som = generate_data(num_points_p_class=20, num_classes=2)
 
 print(X_train_som)
@@ -89,8 +90,9 @@ print(X_train_som)
 model = SOM()
 
 norm_X_train_som = model.norm_data(X_train_som)
-weights_som = model.init_weights(num_neurons=8, input_dim=2)
+weights_som = model.init_weights(num_neurons=12, input_dim=2)
 plot(norm_X_train_som, weights_som, title='Before the training')
 
-pretrained_weights_som = model.train(num_neurons=8, data=norm_X_train_som, input_dim=2, alpha=0.4, epoch_max=400)
+pretrained_weights_som = model.train(num_neurons=8, data=norm_X_train_som, input_dim=2, alpha=0.4, epoch_max=1200)
 plot(norm_X_train_som, pretrained_weights_som, title='After training')
+'''
