@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 
 
-class HopfieldNetwork:
+class Hopfield:
     def __init__(self, data, epoch_max):
         self.weights_r = None
         self.weights_g = None
@@ -26,8 +26,8 @@ class HopfieldNetwork:
         return weights
 
     @staticmethod
-    def neuron(weights, data, epochs=1000):
-        for i in range(epochs):
+    def neuron(weights, data, epoch_max):
+        for i in range(epoch_max):
             data = np.sign(np.dot(weights, data))
 
         return data
@@ -46,21 +46,21 @@ class HopfieldNetwork:
     def reconstruct(self, noisy_data):
         rec_images = []
         for noisy_img in noisy_data:
-            rec_img_r = self.neuron(self.weights_r, noisy_img[:, :, 0].flatten(), epochs=self.epoch_max).reshape(16, 16)
-            rec_img_g = self.neuron(self.weights_g, noisy_img[:, :, 1].flatten(), epochs=self.epoch_max).reshape(16, 16)
-            rec_img_b = self.neuron(self.weights_b, noisy_img[:, :, 2].flatten(), epochs=self.epoch_max).reshape(16, 16)
+            rec_img_r = self.neuron(self.weights_r, noisy_img[:, :, 0].flatten(), self.epoch_max).reshape(16, 16)
+            rec_img_g = self.neuron(self.weights_g, noisy_img[:, :, 1].flatten(), self.epoch_max).reshape(16, 16)
+            rec_img_b = self.neuron(self.weights_b, noisy_img[:, :, 2].flatten(), self.epoch_max).reshape(16, 16)
             rec_img = np.dstack((rec_img_r, rec_img_g, rec_img_b))
             rec_images.append(rec_img)
         return rec_images
 
 
-img_1_path = "images/img_1.png"
-img_2_path = "images/img_2.png"
-img_3_path = "images/img_3.png"
+img_1_path = "/Users/cesarve/Documents/GitHub/Advanced-Neural-Network-ToolKit/neural_networks/images/img_1.png"
+img_2_path = "/Users/cesarve/Documents/GitHub/Advanced-Neural-Network-ToolKit/neural_networks/images/img_2.png"
+img_3_path = "/Users/cesarve/Documents/GitHub/Advanced-Neural-Network-ToolKit/neural_networks/images/img_3.png"
 
-img_1_wn_path = "images/img_1_noisy.png"
-img_2_wn_path = "images/img_2_noisy.png"
-img_3_wn_path = "images/img_3_noisy.png"
+img_1_wn_path = "/Users/cesarve/Documents/GitHub/Advanced-Neural-Network-ToolKit/neural_networks/images/img_1_noisy.png"
+img_2_wn_path = "/Users/cesarve/Documents/GitHub/Advanced-Neural-Network-ToolKit/neural_networks/images/img_2_noisy.png"
+img_3_wn_path = "/Users/cesarve/Documents/GitHub/Advanced-Neural-Network-ToolKit/neural_networks/images/img_3_noisy.png"
 
 img_1 = Image.open(img_1_path)
 img_2 = Image.open(img_2_path)
@@ -91,8 +91,9 @@ img_3_wn_array = np.array(img_3_wn) / 255.0 * 2 - 1
 inputs = [img_1_array, img_2_array, img_3_array]
 noisy_inputs = [img_1_wn_array, img_2_wn_array, img_3_wn_array]
 
+'''
 # Create HopfieldNetwork instance
-hopfield_net = HopfieldNetwork(inputs, epoch_max=1000)
+hopfield_net = Hopfield(inputs, epoch_max=1000)
 
 # Train the network
 hopfield_net.train()
@@ -129,3 +130,4 @@ def plot_images(original_images, noisy_images):
 
 # Example usage:
 plot_images([img_1_original, img_2_original, img_3_original], [img_1_wn_original, img_2_wn_original, img_3_wn_original])
+'''
