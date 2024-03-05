@@ -13,9 +13,7 @@ from neural_networks.hopfield import Hopfield
 from neural_networks.som_kohonen import SOM
 from neural_networks.autoencoder import AutoEncoder
 
-# from neural_networks.lvq import LVQ
-
-customtkinter.set_appearance_mode("system")
+customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
 
 
@@ -39,12 +37,12 @@ class App(customtkinter.CTk):
 
         # Create a logo label inside the sidebar
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="ANN ToolKit",
-                                                 font=customtkinter.CTkFont(size=20, weight="bold"))
+                                            font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
         # Label for the levels of abstraction
         self.levels_of_abstraction_label = customtkinter.CTkLabel(self.sidebar_frame, text="Levels:",
-                                                                  anchor="w")
+                                                             anchor="w")
         self.levels_of_abstraction_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
 
         # Variable to store the level of abstraction choice
@@ -53,32 +51,26 @@ class App(customtkinter.CTk):
 
         # Radio button for Low Level
         self.low_level_radio = CTkRadioButton(self.sidebar_frame, text="Low-Level",
-                                              variable=self.abstraction_level_var, value="Low Level")
+                                         variable=self.abstraction_level_var, value="Low Level")
         self.low_level_radio.grid(row=2, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # Radio button for High Level
         self.high_level_radio = CTkRadioButton(self.sidebar_frame, text="High-Level",
-                                               variable=self.abstraction_level_var, value="High Level")
+                                          variable=self.abstraction_level_var, value="High Level")
         self.high_level_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
-
-        # Create a label and a button to open a file
-        # self.open_file_label = customtkinter.CTkLabel(self.sidebar_frame, text="Open a file:", anchor="w")
-        # self.open_file_label.grid(row=5, column=0, padx=20, pady=(10, 0))
-        # self.open_file_button = customtkinter.CTkButton(self.sidebar_frame, text="Open file",
-        #                                              command=self.sidebar_open_button_event, anchor="w")
-        # self.open_file_button.grid(row=6, column=0, padx=20, pady=(10, 20))
 
         # Create the label for the author and the description
         self.author_label = customtkinter.CTkLabel(self.sidebar_frame, text="Created by:",
-                                                   font=customtkinter.CTkFont(size=14, weight="normal"))
+                                              font=customtkinter.CTkFont(size=14, weight="normal"))
         self.author_label.grid(row=4, column=0, padx=20, pady=(10, 0))
         self.author1_label = customtkinter.CTkLabel(self.sidebar_frame, text="Cesar A Villegas Espindola",
-                                                    font=customtkinter.CTkFont(size=14, weight="normal"))
+                                               font=customtkinter.CTkFont(size=14, weight="normal"))
         self.author1_label.grid(row=5, column=0, padx=20, pady=(10, 20))
 
         self.exit_button = customtkinter.CTkButton(self.sidebar_frame, fg_color="red", text="Close App",
-                                                   command=self.exit, anchor="w")
+                                              command=self.exit, anchor="w")
         self.exit_button.grid(row=6, column=0, padx=20, pady=(10, 20))
+
 
         # Create tabview
         self.tabview = customtkinter.CTkTabview(self, width=250)
@@ -92,13 +84,19 @@ class App(customtkinter.CTk):
 
         # ########### 1st Tab ###########
         tab_1 = self.tabview.tab("Hopfield")
+        # ###############################
 
-        self.label_tab_1 = customtkinter.CTkLabel(tab_1, text="Hopfield Network")
-        self.label_tab_1.grid(row=0, column=0, padx=20, pady=20)
+        self.label_hop = customtkinter.CTkLabel(tab_1, text="Hopfield Network",
+                                                font=("bold", 24))
+        self.label_hop.grid(row=0, column=0, padx=20, pady=20)
 
         epoch_max_hop = StringVar()
         num_og_images = StringVar()
         num_noisy_images = StringVar()
+
+        self.label_epoch_max_hop = customtkinter.CTkLabel(tab_1, text="Epoch max",
+                                                          font=("bold", 16))
+        self.label_epoch_max_hop.grid(row=1, column=0, padx=20, pady=20)
 
         def entry_epoch_max_hop():
             def parse_entry(*args):
@@ -115,7 +113,7 @@ class App(customtkinter.CTk):
             # Use learning_rate as the text variable for the entry widget
             self.entry_epoch_max_hop = customtkinter.CTkEntry(tab_1, placeholder_text="Epoch max",
                                                               textvariable=epoch_max_hop)
-            self.entry_epoch_max_hop.grid(row=1, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+            self.entry_epoch_max_hop.grid(row=1, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
             epoch_max_hop.trace("w", parse_entry)
@@ -158,7 +156,7 @@ class App(customtkinter.CTk):
 
             # Use learning_rate as the text variable for the entry widget
             self.entry_num_noisy_images = customtkinter.CTkEntry(tab_1, placeholder_text="Num of noisy images",
-                                                              textvariable=num_noisy_images)
+                                                                 textvariable=num_noisy_images)
             self.entry_num_noisy_images.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
@@ -167,14 +165,38 @@ class App(customtkinter.CTk):
         entry_num_og_images()
         entry_num_noisy_images()
 
+        # select the image that you want to decode
+        # Variable to store the image of choice
+        self.image_choice_var = customtkinter.StringVar(value="First Image")  # Default is "First Image"
+
+        # Radio button for the First Image
+        self.first_image_radio = customtkinter.CTkRadioButton(tab_1, text="First Image",
+                                                              variable=self.image_choice_var, value="First Image")
+        self.first_image_radio.grid(row=4, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        # Radio button for the Second Image
+        self.second_image_radio = customtkinter.CTkRadioButton(tab_1, text="Second Image",
+                                                               variable=self.image_choice_var, value="Second Image")
+        self.second_image_radio.grid(row=4, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        # Radio button for the Third Image
+        self.third_image_radio = customtkinter.CTkRadioButton(tab_1, text="Third Image",
+                                                              variable=self.image_choice_var, value="Third Image")
+        self.third_image_radio.grid(row=4, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # To do: Add the area to add images for the input
         # Create a canvas to display the plot in the Hopfield tab
-        self.button1_tab_1 = customtkinter.CTkButton(tab_1, fg_color="transparent", border_width=2,
-                                                     text="Train algorithm",
-                                                     text_color=("gray10", "#DCE4EE"),
-                                                     anchor="w")  # , command=self.generate_and_show_plot
-        self.button1_tab_1.grid(row=4, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.button_train_hop = customtkinter.CTkButton(tab_1, fg_color="transparent", border_width=2,
+                                                        text="Train algorithm",
+                                                        text_color=("gray10", "#DCE4EE"),
+                                                        anchor="w")  # , command=self.generate_and_show_plot
+        self.button_train_hop.grid(row=5, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+
+        self.button_reconstruction_hop = customtkinter.CTkButton(tab_1, fg_color="transparent", border_width=2,
+                                                                 text="Recontruct image",
+                                                                 text_color=("gray10", "#DCE4EE"),
+                                                                 anchor="w")
+        self.button_reconstruction_hop.grid(row=5, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         self.canvas_tab_1 = customtkinter.CTkCanvas(tab_1, width=0, height=0)
         self.canvas_tab_1.grid(row=3, column=2, padx=0, pady=0)
