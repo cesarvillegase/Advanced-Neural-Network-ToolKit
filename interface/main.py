@@ -1,6 +1,6 @@
 from tkinter import filedialog as fd, StringVar
 from PIL import Image, ImageTk
-from tkinter.messagebox import showinfo
+# from tkinter.messagebox import showinfo
 
 import customtkinter
 import matplotlib.pyplot as plt
@@ -10,8 +10,9 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from neural_networks.hopfield import HopfieldNetwork
 from neural_networks.backprop import Backpropagation
-from neural_networks.som_kohonen import SOM
-from neural_networks.autoencoder import AutoEncoder
+
+# from neural_networks.som_kohonen import SOM
+# from neural_networks.autoencoder import AutoEncoder
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
@@ -43,40 +44,40 @@ class App(customtkinter.CTk):
 
     def setup_sidebar_widgets(self):
         # Create a logo label inside the sidebar
-        self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="ANN ToolKit",
-                                                 font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
+        logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="ANN ToolKit",
+                                            font=customtkinter.CTkFont(size=20, weight="bold"))
+        logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
         # Label for the levels of abstraction
-        self.levels_of_abstraction_label = customtkinter.CTkLabel(self.sidebar_frame, text="Levels:",
-                                                                  anchor="w")
-        self.levels_of_abstraction_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
+        levels_of_abstraction_label = customtkinter.CTkLabel(self.sidebar_frame, text="Levels:",
+                                                             anchor="w")
+        levels_of_abstraction_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
 
         # Variable to store the level of abstraction choice
-        self.abstraction_level_var = customtkinter.StringVar(
+        abstraction_level_var = customtkinter.StringVar(
             value="Low Level")  # Default value can be "Low Level" or "High Level"
 
         # Radio button for Low Level
-        self.low_level_radio = CTkRadioButton(self.sidebar_frame, text="Low-Level",
-                                              variable=self.abstraction_level_var, value="Low Level")
-        self.low_level_radio.grid(row=2, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
+        low_level_radio = CTkRadioButton(self.sidebar_frame, text="Low-Level",
+                                         variable=abstraction_level_var, value="Low Level")
+        low_level_radio.grid(row=2, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # Radio button for High Level
-        self.high_level_radio = CTkRadioButton(self.sidebar_frame, text="High-Level",
-                                               variable=self.abstraction_level_var, value="High Level")
-        self.high_level_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
+        high_level_radio = CTkRadioButton(self.sidebar_frame, text="High-Level",
+                                          variable=abstraction_level_var, value="High Level")
+        high_level_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # Create the label for the author and the description
-        self.author_label = customtkinter.CTkLabel(self.sidebar_frame, text="Created by:",
-                                                   font=customtkinter.CTkFont(size=14, weight="normal"))
-        self.author_label.grid(row=4, column=0, padx=20, pady=(10, 0))
-        self.author1_label = customtkinter.CTkLabel(self.sidebar_frame, text="Cesar A Villegas Espindola",
-                                                    font=customtkinter.CTkFont(size=14, weight="normal"))
-        self.author1_label.grid(row=5, column=0, padx=20, pady=(10, 20))
+        author_label = customtkinter.CTkLabel(self.sidebar_frame, text="Created by:",
+                                              font=customtkinter.CTkFont(size=14, weight="normal"))
+        author_label.grid(row=4, column=0, padx=20, pady=(10, 0))
+        author1_label = customtkinter.CTkLabel(self.sidebar_frame, text="Cesar A Villegas Espindola",
+                                               font=customtkinter.CTkFont(size=14, weight="normal"))
+        author1_label.grid(row=5, column=0, padx=20, pady=(10, 20))
 
-        self.exit_button = customtkinter.CTkButton(self.sidebar_frame, fg_color="red", text="Close App",
-                                                   command=self.exit, anchor="w")
-        self.exit_button.grid(row=6, column=0, padx=20, pady=(10, 20))
+        exit_button = customtkinter.CTkButton(self.sidebar_frame, fg_color="red", text="Close App",
+                                              command=self.exit, anchor="w")
+        exit_button.grid(row=6, column=0, padx=20, pady=(10, 20))
 
     def create_tabview(self):
         # Create tabview
@@ -138,17 +139,17 @@ class App(customtkinter.CTk):
         pil_image1 = Image.open(
             r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hop_labels\cat.jpg")
         resized_image1 = pil_image1.resize((240, 240))
-        self.image1 = ImageTk.PhotoImage(resized_image1)
+        image1 = ImageTk.PhotoImage(resized_image1)
 
         pil_image2 = Image.open(
             r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hop_labels\fox.jpg")
         resized_image2 = pil_image2.resize((240, 240))
-        self.image2 = ImageTk.PhotoImage(resized_image2)
+        image2 = ImageTk.PhotoImage(resized_image2)
 
         pil_image3 = Image.open(
             r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hop_labels\star.jpg")
         resized_image3 = pil_image3.resize((240, 240))
-        self.image3 = ImageTk.PhotoImage(resized_image3)
+        image3 = ImageTk.PhotoImage(resized_image3)
 
         # select the image that you want to decode, Variable to store the image of choice
         image_choice_var = customtkinter.StringVar(value="First Image")  # Default is "First Image"
@@ -158,21 +159,21 @@ class App(customtkinter.CTk):
                                                          variable=image_choice_var, value="First Image")
         first_image_radio.grid(row=4, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        first_image_label = customtkinter.CTkLabel(tab, image=self.image1, text="")
+        first_image_label = customtkinter.CTkLabel(tab, image=image1, text="")
         first_image_label.grid(row=5, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         second_image_radio = customtkinter.CTkRadioButton(tab, text="Second Image",
                                                           variable=image_choice_var, value="Second Image")
         second_image_radio.grid(row=4, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        second_image_label = customtkinter.CTkLabel(tab, image=self.image2, text="")
+        second_image_label = customtkinter.CTkLabel(tab, image=image2, text="")
         second_image_label.grid(row=5, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
 
         third_image_radio = customtkinter.CTkRadioButton(tab, text="Third Image",
                                                          variable=image_choice_var, value="Third Image")
         third_image_radio.grid(row=4, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        third_image_label = customtkinter.CTkLabel(tab, image=self.image3, text="")
+        third_image_label = customtkinter.CTkLabel(tab, image=image3, text="")
         third_image_label.grid(row=5, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # ######## OBTAIN THE IMAGE PATHS ########
@@ -265,7 +266,8 @@ class App(customtkinter.CTk):
     def plot_images(self, original_img, noisy_img, reconstructed_img):
         """Plot the original, noisy, and reconstructed images."""
         plt.figure(figsize=(12, 4))
-        imgs = [original_img[0], noisy_img[0], reconstructed_img[0]]  # Access the first element since each is wrapped in a list
+        imgs = [original_img[0], noisy_img[0],
+                reconstructed_img[0]]  # Access the first element since each is wrapped in a list
         titles = ['Original Image', 'Noisy Image', 'Reconstructed Image']
         for i in range(3):
             plt.subplot(1, 3, i + 1)
@@ -275,14 +277,13 @@ class App(customtkinter.CTk):
         plt.tight_layout()
         plt.show()
 
-
     # ########### 2nd Tab ###########
     def setup_backprop_tab(self, tab):
         label_tab_2 = customtkinter.CTkLabel(tab, text="Backpropagation Network")
         label_tab_2.grid(row=0, column=0, padx=20, pady=20)
 
         # Instantiate an object of the Backpropagation class
-        self.backpropagation_model = Backpropagation(input_neurons=3, hidden_neurons=3, output_neurons=1)
+        backpropagation_model = Backpropagation(input_neurons=3, hidden_neurons=3, output_neurons=1)
 
         input_bp = StringVar()
         desired_output_bp = StringVar()
@@ -398,7 +399,7 @@ class App(customtkinter.CTk):
                 learning_rate = float(learning_rate_str)
 
                 # Now, you can use the data to train your neural network using the Backpropagation object
-                self.backpropagation_model.train(input_data, desired_output, learning_rate)
+                backpropagation_model.train(input_data, desired_output, learning_rate)
 
                 print("Training phase")
             except Exception as e:
@@ -420,7 +421,7 @@ class App(customtkinter.CTk):
                 desired_output = np.array(eval(desired_output_str))
 
                 # Now, you can use the data to train your neural network using the Backpropagation object
-                self.backpropagation_model.test(input_data, desired_output)
+                backpropagation_model.test(input_data, desired_output)
 
                 print("Test phase")
             except Exception as e:
@@ -434,7 +435,7 @@ class App(customtkinter.CTk):
         # Plot loss
         def plot_loss_from_test():
             # Plot the loss directly using the loss values obtained during the test
-            loss_values = self.backpropagation_model.loss
+            loss_values = backpropagation_model.loss
 
             # Clear the previous plot, if any
             canvas_tab_2.delete("all")
