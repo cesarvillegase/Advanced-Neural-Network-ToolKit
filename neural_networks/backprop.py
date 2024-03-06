@@ -102,4 +102,5 @@ def plot_loss(loss_value):
 # input [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]
 # Desired Output Data [0], [1], [1], [0]
 # Learning rate 0.7
+
 '''
