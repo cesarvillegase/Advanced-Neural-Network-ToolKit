@@ -93,6 +93,6 @@ norm_X_train_som = model.norm_data(X_train_som)
 weights_som = model.init_weights(num_neurons=12, input_dim=2)
 plot(norm_X_train_som, weights_som, title='Before the training')
 
-pretrained_weights_som = model.train(num_neurons=8, data=norm_X_train_som, input_dim=2, alpha=0.4, epoch_max=1200)
+pretrained_weights_som = model.train(num_neurons=8, input_dim=2, data=norm_X_train_som, alpha=0.4, epoch_max=1200)
 plot(norm_X_train_som, pretrained_weights_som, title='After training')
 '''
