@@ -99,16 +99,7 @@ def plot_loss(loss_value):
 '''
 # TESTING
 
-# Input Data
-X_train_bp = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
-# Desired Output Data
-y_train_bp = np.array([[0], [1], [1], [0]])
-# Learning rate
-alpha_bp = 0.7
-
-model = Backpropagation(input_neurons=3, hidden_neurons=3, output_neurons=1)
-model.train(X_train_bp, y_train_bp, alpha_bp)
-
-loss, output_activation = model.test(X_train_bp, y_train_bp)
-plot_loss(loss)
+# input [1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]
+# Desired Output Data [0], [1], [1], [0]
+# Learning rate 0.7
 '''
