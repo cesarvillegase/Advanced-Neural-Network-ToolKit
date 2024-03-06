@@ -10,8 +10,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 from neural_networks.hopfield import HopfieldNetwork
 from neural_networks.backprop import Backpropagation
+from neural_networks.som_kohonen import SOM
 
-# from neural_networks.som_kohonen import SOM
 # from neural_networks.autoencoder import AutoEncoder
 
 customtkinter.set_appearance_mode("dark")
@@ -93,9 +93,9 @@ class App(customtkinter.CTk):
                 self.setup_hopfield_tab(tab)
             if tab_name == "Backpropagation":
                 self.setup_backprop_tab(tab)
-            '''
             if tab_name == "Kohonen SOM":
                 self.setup_som_tab(tab)
+            '''
             if tab_name == "AutoEncoder":
                 self.setup_som_tab(tab)
             if tab_name == "LVQ":
@@ -110,9 +110,6 @@ class App(customtkinter.CTk):
 
         epoch_max_hop = StringVar()
 
-        label_epoch_max_hop = customtkinter.CTkLabel(tab, text="Epoch max:", font=("bold", 14))
-        label_epoch_max_hop.grid(row=1, column=0, padx=20, pady=20)
-
         def entry_epoch_max_hop():
             def parse_entry(*args):
                 try:
@@ -125,10 +122,12 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid Epoch max format")
 
+            label_epoch_max_hop = customtkinter.CTkLabel(tab, text="Epoch max:", font=("bold", 14))
+            label_epoch_max_hop.grid(row=1, column=0, padx=20, pady=20)
+
             # Use learning_rate as the text variable for the entry widget
-            self.entry_epoch_max_hop = customtkinter.CTkEntry(tab, placeholder_text="Epoch max",
-                                                              textvariable=epoch_max_hop)
-            self.entry_epoch_max_hop.grid(row=1, column=1, columnspan=1, padx=(20), pady=(20), sticky="nsew")
+            entry_epoch_max_hop = customtkinter.CTkEntry(tab, textvariable=epoch_max_hop)
+            entry_epoch_max_hop.grid(row=1, column=1, columnspan=1, padx=(20), pady=(20), sticky="nsew")
 
             # Attach the trace callback to the text variable
             epoch_max_hop.trace("w", parse_entry)
@@ -193,15 +192,6 @@ class App(customtkinter.CTk):
         img_1_wn = Image.open(img_1_wn_path)
         img_2_wn = Image.open(img_2_wn_path)
         img_3_wn = Image.open(img_3_wn_path)
-
-        # Make copies of the original images
-        img_1_original = img_1.copy()
-        img_2_original = img_2.copy()
-        img_3_original = img_3.copy()
-
-        img_1_wn_original = img_1_wn.copy()
-        img_2_wn_original = img_2_wn.copy()
-        img_3_wn_original = img_3_wn.copy()
 
         # ######## NORMALIZE THE IMAGES ########
         img_1_array = np.array(img_1) / 255.0 * 2 - 1
@@ -435,7 +425,7 @@ class App(customtkinter.CTk):
         # Plot loss
         def plot_loss_from_test():
             # Plot the loss directly using the loss values obtained during the test
-            loss_values = zzbackpropagation_model.loss
+            loss_values = backpropagation_model.loss
 
             # Clear the previous plot, if any
             canvas_tab_2.delete("all")
@@ -469,112 +459,6 @@ class App(customtkinter.CTk):
 
         '''
         
-
-        # ########### 3rd Tab ###########
-        tab_3 = self.tabview.tab("Kohonen SOM")
-
-        self.label_tab_3 = customtkinter.CTkLabel(tab_3, text="Kohonen SOM Network")
-        self.label_tab_3.grid(row=0, column=0, padx=20, pady=20)
-
-        self.som_kohonen_model = SOM()
-
-        num_of_neurons_som = StringVar()
-        input_dim_som = StringVar()
-        data_som = StringVar()
-        lr_som = StringVar()
-        epoch_max_som = StringVar()
-
-        def entry1_tab3():
-            def parse_entry(*args):
-                try:
-                    # Get the input value from the entry widget
-                    input_value_str = input_dim_som.get()
-                    # Convert the input value to a float
-                    input_dim_value = int(input_value_str)
-                    # Use the input_dim_value here
-                    print("Input dimension:", input_dim_value)
-                except ValueError:
-                    print("Invalid input dimension format")
-
-            self.entry1_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Input Dimension",
-                                                       textvariable=input_dim_som)
-            self.entry1_tab_3.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-            # Attach the trace callback to the text variable
-            input_dim_som.trace("w", parse_entry)
-
-        def entry2_tab3():
-            def parse_entry(*args):
-                try:
-                    # Get the input value from the entry widget
-                    input_value_str = num_of_neurons_som.get()
-                    # Convert the input value to a float
-                    num_of_neurons_value = int(input_value_str)
-                    # Use the input_dim_value here
-                    print("Number of neurons:", num_of_neurons_value)
-                except ValueError:
-                    print("Invalid number of neurons format")
-
-            self.entry2_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Num of neurons",
-                                                       textvariable=num_of_neurons_som)
-            self.entry2_tab_3.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-            # Attach the trace callback to the text variable
-            num_of_neurons_som.trace("w", parse_entry)
-
-        def entry3_tab3():
-            def parse_entry(*args):
-                try:
-                    # Get the input value from the entry widget
-                    input_value_str = lr_som.get()
-                    # Convert the input value to a float
-                    lr_som_value = float(input_value_str)
-                    # Use the input_dim_value here
-                    print("Learning rate:", lr_som_value)
-                except ValueError:
-                    print("Invalid learning rate format")
-
-            self.entry3_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Learning rate",
-                                                       textvariable=lr_som)
-            self.entry3_tab_3.grid(row=4, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-            # Attach the trace callback to the text variable
-            lr_som.trace("w", parse_entry)
-
-        def entry4_tab3():
-            def parse_entry(*args):
-                try:
-                    # Get the input value from the entry widget
-                    input_value_str = epoch_max_som.get()
-                    # Convert the input value to a float
-                    epoch_max_value = int(input_value_str)
-                    # Use the input_dim_value here
-                    print("Epoch max:", epoch_max_value)
-                except ValueError:
-                    print("Invalid epoch max format")
-
-            self.entry4_tab_3 = customtkinter.CTkEntry(tab_3, placeholder_text="Epoch max", textvariable=epoch_max_som)
-            self.entry4_tab_3.grid(row=5, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-            # Attach the trace callback to the text variable
-            epoch_max_som.trace("w", parse_entry)
-
-        def train_som():
-            pass
-
-        entry1_tab3()
-        entry2_tab3()
-        entry3_tab3()
-        entry4_tab3()
-
-        self.button1_tab_3 = customtkinter.CTkButton(tab_3, fg_color="transparent", border_width=2,
-                                                     text="Train Network", text_color=("gray10", "#DCE4EE"))
-        self.button1_tab_3.grid(row=6, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
-
-        self.button2_tab_3 = customtkinter.CTkButton(tab_3, fg_color="transparent", border_width=2,
-                                                     text="Plot results", text_color=("gray10", "#DCE4EE"))
-        self.button2_tab_3.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
-
         # ########### 4th Tab ###########
         tab_4 = self.tabview.tab("AutoEncoder")
 
@@ -635,6 +519,234 @@ class App(customtkinter.CTk):
                                                      text="Test Network", text_color=("gray10", "#DCE4EE"))
         self.button2_tab_5.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
         '''
+
+    # ########### 3rd Tab ###########
+    def setup_som_tab(self, tab):
+        label_tab_3 = customtkinter.CTkLabel(tab, text="Kohonen SOM Network", font=("bold", 24))
+        label_tab_3.grid(row=0, column=0, padx=20, pady=20)
+
+        som_model = SOM()
+
+        num_point_per_class_som = StringVar()
+        num_classes_som = StringVar()
+        num_of_neurons_som = StringVar()
+        input_dim_som = StringVar()
+        lr_som = StringVar()
+        epoch_max_som = StringVar()
+
+        def entry_num_points_per_class_som():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = num_point_per_class_som.get()
+                    # Convert the input value to a float
+                    num_points_per_class_value = int(input_value_str)
+                    # Use the input_dim_value here
+                    print("Number of points per class:", num_points_per_class_value)
+                except ValueError:
+                    print("Invalid number of points per class format")
+
+            label_num_points_pclass = customtkinter.CTkLabel(tab, text="Num. of points per class:")
+            label_num_points_pclass.grid(row=1, column=0, padx=20, pady=20)
+
+            entry_num_points_per_class_som = customtkinter.CTkEntry(tab, placeholder_text="Number of points per class",
+                                                                    textvariable=num_point_per_class_som)
+            entry_num_points_per_class_som.grid(row=1, column=1, columnspan=2, padx=(20, 0), pady=(20, 20),
+                                                sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            num_point_per_class_som.trace("w", parse_entry)
+
+        def entry_classes_som():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = num_classes_som.get()
+                    # Convert the input value to a float
+                    num_classes_som_value = int(input_value_str)
+                    # Use the input_dim_value here
+                    print("Number of classes:", num_classes_som_value)
+                except ValueError:
+                    print("Invalid Number of classes format")
+
+            label_num_classes_som = customtkinter.CTkLabel(tab, text="Num. of classes:")
+            label_num_classes_som.grid(row=2, column=0, padx=20, pady=20)
+
+            entry_num_classes_som = customtkinter.CTkEntry(tab, textvariable=num_classes_som)
+            entry_num_classes_som.grid(row=2, column=1, columnspan=2, padx=(20, 0), pady=(20, 20),
+                                                sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            num_classes_som.trace("w", parse_entry)
+
+        def entry_number_of_neurons_som():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = num_of_neurons_som.get()
+                    # Convert the input value to a float
+                    num_of_neurons_value = int(input_value_str)
+                    # Use the input_dim_value here
+                    print("Number of neurons:", num_of_neurons_value)
+                except ValueError:
+                    print("Invalid number of neurons format")
+
+            label_number_of_neurons_som = customtkinter.CTkLabel(tab, text="Num of neurons:")
+            label_number_of_neurons_som.grid(row=3, column=0, padx=20, pady=20)
+
+            entry_number_of_neurons_som = customtkinter.CTkEntry(tab, textvariable=num_of_neurons_som)
+            entry_number_of_neurons_som.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20),
+                                             sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            num_of_neurons_som.trace("w", parse_entry)
+
+        def entry_input_dimension_som():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = input_dim_som.get()
+                    # Convert the input value to a float
+                    input_dim_value = int(input_value_str)
+                    # Use the input_dim_value here
+                    print("Input dimension:", input_dim_value)
+                except ValueError:
+                    print("Invalid input dimension format")
+
+            label_input_dimension = customtkinter.CTkLabel(tab, text="Input dimension:")
+            label_input_dimension.grid(row=4, column=0, padx=20, pady=20)
+
+            entry_input_dimension_som = customtkinter.CTkEntry(tab, textvariable=input_dim_som)
+            entry_input_dimension_som.grid(row=4, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            input_dim_som.trace("w", parse_entry)
+
+        def entry_learning_rate_som():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = lr_som.get()
+                    # Convert the input value to a float
+                    lr_som_value = float(input_value_str)
+                    # Use the input_dim_value here
+                    print("Learning rate:", lr_som_value)
+                except ValueError:
+                    print("Invalid learning rate format")
+
+            label_learning_rate_som = customtkinter.CTkLabel(tab, text="Learning rate")
+            label_learning_rate_som.grid(row=5, column=0, padx=20, pady=20)
+
+            entry_learning_rate_som = customtkinter.CTkEntry(tab, textvariable=lr_som)
+            entry_learning_rate_som.grid(row=5, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            lr_som.trace("w", parse_entry)
+
+        def entry_epoch_max_som():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = epoch_max_som.get()
+                    # Convert the input value to a float
+                    epoch_max_value = int(input_value_str)
+                    # Use the input_dim_value here
+                    print("Epoch max:", epoch_max_value)
+                except ValueError:
+                    print("Invalid epoch max format")
+
+            label_epoch_max_som = customtkinter.CTkLabel(tab, text="Epoch max:")
+            label_epoch_max_som.grid(row=6, column=0, padx=20, pady=20)
+
+            entry_epoch_max_som = customtkinter.CTkEntry(tab, textvariable=epoch_max_som)
+            entry_epoch_max_som.grid(row=6, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+            # Attach the trace callback to the text variable
+            epoch_max_som.trace("w", parse_entry)
+
+        entry_num_points_per_class_som()
+        entry_classes_som()
+        entry_number_of_neurons_som()
+        entry_input_dimension_som()
+        entry_learning_rate_som()
+        entry_epoch_max_som()
+
+        def setup_data_som(num_points_p_class, num_classes):
+            np.random.seed(42)
+            data = []
+            labels = []
+
+            for i in range(num_classes):
+                points = np.random.rand(num_points_p_class, 2) * 2
+
+                if i == 1:
+                    points += np.array([3, 3])
+                elif i == 2:
+                    points += np.array([0, 4])
+                elif i == 3:
+                    points += np.array([3, 0])
+
+                data.append(points)
+                labels.append(np.full(num_points_p_class, i))
+
+            data = np.vstack(data)
+            y = np.concatenate(labels)
+
+            print("The data is generated")
+
+            return data, y
+
+        def generate_data():
+            num_points_p_class_str = num_point_per_class_som.get()  # From string to a numpy array
+            num_classes_str = num_classes_som.get()
+
+            # Convert the string representations to the appropriate types
+            try:
+                num_points_p_class = int(num_points_p_class_str)
+                num_classes = int(num_classes_str)
+
+                # Get the data generated by the generate_data() function
+                self.data, self.labels = setup_data_som(num_points_p_class, num_classes)
+
+            except Exception as e:
+                print(f"An error occurred: {e}")
+
+        def train_som():
+            num_neurons_str = num_of_neurons_som.get()
+            input_dim_str = input_dim_som.get()
+            learning_rate_str = lr_som.get()
+            epoch_max_str = epoch_max_som.get()
+
+            # Convert the string representations to the appropriate types
+            try:
+                num_of_neurons = int(num_neurons_str)
+                input_dim = int(input_dim_str)
+                learning_rate = float(learning_rate_str)
+                epoch_max = int(epoch_max_str)
+
+                print("Training phase")
+
+                # Now, you can use the data to train your neural network using the SOM model
+                trained_weights = som_model.train(num_of_neurons, input_dim, self.data, learning_rate, epoch_max)
+                print("Training completed.")
+
+            except Exception as e:
+                print(f"An error occurred: {e}")
+
+        button_generate_data_som = customtkinter.CTkButton(tab, fg_color="#219ebc", border_width=2,
+                                                           text="Generate data", text_color="white",
+                                                           command=generate_data)
+        # command=generate_data_som()) num_points_p_class=, num_classes=
+        button_generate_data_som.grid(row=7, column=0, padx=(20, 20), pady=(20, 20))
+
+        button_train_network = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                                       command=train_som)
+        button_train_network.grid(row=7, column=1, padx=(20, 20), pady=(20, 20))
+
+        button_plot_results = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                text="Plot results", text_color=("gray10", "#DCE4EE"))
+        button_plot_results.grid(row=7, column=2, padx=(20, 20), pady=(20, 20))
 
     def exit(self):
         self.destroy()
