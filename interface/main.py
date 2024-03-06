@@ -435,7 +435,7 @@ class App(customtkinter.CTk):
         # Plot loss
         def plot_loss_from_test():
             # Plot the loss directly using the loss values obtained during the test
-            loss_values = backpropagation_model.loss
+            loss_values = zzbackpropagation_model.loss
 
             # Clear the previous plot, if any
             canvas_tab_2.delete("all")
