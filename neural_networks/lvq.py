@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score
 
 
-class LVQ:
+class LvqNetwork:
     def __init__(self):
         self.vectors = None
 
@@ -28,7 +28,8 @@ class LVQ:
         normalized_vectors = np.array(normalized_vectors)
         return normalized_vectors
 
-    def train(self, normalized_data, y, delta, epoch_max):
+    def train(self, data, y, delta, epoch_max):
+        normalized_data = self. norm_data(data)
         self.vectors = self.init_vectors(normalized_data, y)
         for epoch in range(epoch_max):
             for data_point in range(len(normalized_data)):
@@ -73,9 +74,13 @@ def plot(normalized_data, normalized_vectors, y, title, test=False):
         plt.show()
 
 
+
+'''
+
 # TESTING    
 
 # Training data
+
 X_train_lvq = np.array([[5.2, 6.7], [2.0, 3.0], [4.0, 5.0], [7.9, 6.1], [1.0, 2.0], [7.1, 8.9],
                         [2.0, 1.0], [5.1, 7.2], [3.0, 3.0], [7.9, 5.2], [4.0, 5.0], [2.9, 3.2],
                         [4.1, 5.7], [1.2, 2.8], [7.9, 6.2], [5.2, 6.1], [9.2, 8.1], [2.2, 1.1],
@@ -111,3 +116,6 @@ accuracy = accuracy_score(y_test_lvq, labels_predicted_lvq)
 print(f"> Accuracy of the model: {accuracy:.2f}")
 print("True labels:", y_test_lvq)
 print("Predicted labels:", labels_predicted_lvq)
+
+
+'''
