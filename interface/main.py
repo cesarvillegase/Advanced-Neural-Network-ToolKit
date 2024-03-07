@@ -1,4 +1,4 @@
-from tkinter import filedialog as fd, StringVar
+from tkinter import StringVar # filedialog as fd,
 from PIL import Image, ImageTk
 # from tkinter.messagebox import showinfo
 
@@ -11,8 +11,8 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from neural_networks.hopfield import HopfieldNetwork
 from neural_networks.backprop import Backpropagation
 from neural_networks.som_kohonen import SOM
-
-# from neural_networks.autoencoder import AutoEncoder
+from neural_networks.autoencoder import AutoEncoder
+# from neural_networks.lvq import import LVQ
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
@@ -95,9 +95,9 @@ class App(customtkinter.CTk):
                 self.setup_backprop_tab(tab)
             if tab_name == "Kohonen SOM":
                 self.setup_som_tab(tab)
-            '''
             if tab_name == "AutoEncoder":
-                self.setup_som_tab(tab)
+                self.setup_autoencoder(tab)
+            '''
             if tab_name == "LVQ":
                 self.setup_lvq_tab(tab)
 
@@ -136,17 +136,17 @@ class App(customtkinter.CTk):
 
         # Images for the labels
         pil_image1 = Image.open(
-            r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hop_labels\cat.jpg")
+            r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hopfield\labels\cat.jpg")
         resized_image1 = pil_image1.resize((240, 240))
         image1 = ImageTk.PhotoImage(resized_image1)
 
         pil_image2 = Image.open(
-            r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hop_labels\fox.jpg")
+            r"C:\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hopfield\labels\fox.jpg")
         resized_image2 = pil_image2.resize((240, 240))
         image2 = ImageTk.PhotoImage(resized_image2)
 
         pil_image3 = Image.open(
-            r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hop_labels\star.jpg")
+            r"C:\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hopfield\labels\star.jpg")
         resized_image3 = pil_image3.resize((240, 240))
         image3 = ImageTk.PhotoImage(resized_image3)
 
@@ -176,13 +176,13 @@ class App(customtkinter.CTk):
         third_image_label.grid(row=5, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # ######## OBTAIN THE IMAGE PATHS ########
-        img_1_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\img_1.png"
-        img_2_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\img_2.png"
-        img_3_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\img_3.png"
+        img_1_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hopfield\data\img_1.png"
+        img_2_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hopfield\data\img_2.png"
+        img_3_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hopfield\data\img_3.png"
 
-        img_1_wn_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\img_1_noisy.png"
-        img_2_wn_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\img_2_noisy.png"
-        img_3_wn_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\img_3_noisy.png"
+        img_1_wn_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hopfield\data\img_1_noisy.png"
+        img_2_wn_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hopfield\data\img_2_noisy.png"
+        img_3_wn_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\hopfield\data\img_3_noisy.png"
 
         # ######## LOAD THE IMAGES ########
         img_1 = Image.open(img_1_path)
@@ -457,69 +457,6 @@ class App(customtkinter.CTk):
                                                  command=plot_loss_from_test)
         button_loss_bp.grid(row=4, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
-        '''
-        
-        # ########### 4th Tab ###########
-        tab_4 = self.tabview.tab("AutoEncoder")
-
-        # Instantiate an object of the Backpropagation class
-        self.autoencoder_model = AutoEncoder()
-
-        input_ac = StringVar()
-        learning_rate_ac = StringVar()
-        momentum_ac = StringVar()
-        epoch_max_ac = StringVar()
-
-        self.label_tab_4 = customtkinter.CTkLabel(tab_4, text="AutoEncoder Network")
-        self.label_tab_4.grid(row=0, column=0, padx=20, pady=20)
-
-        self.entry1_tab_4 = customtkinter.CTkEntry(tab_4, placeholder_text="Input")
-        self.entry1_tab_4.grid(row=1, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.entry2_tab_4 = customtkinter.CTkEntry(tab_4, placeholder_text="Learning rate")
-        self.entry2_tab_4.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.entry3_tab_4 = customtkinter.CTkEntry(tab_4, placeholder_text="Momentum rate")
-        self.entry3_tab_4.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.entry4_tab_4 = customtkinter.CTkEntry(tab_4, placeholder_text="Epoch max")
-        self.entry4_tab_4.grid(row=4, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.button1_tab_4 = customtkinter.CTkButton(tab_4, fg_color="transparent", border_width=2,
-                                                     text="Train Network", text_color=("gray10", "#DCE4EE"))
-        self.button1_tab_4.grid(row=6, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
-
-        self.button2_tab_4 = customtkinter.CTkButton(tab_4, fg_color="transparent", border_width=2,
-                                                     text="Plot loss", text_color=("gray10", "#DCE4EE"))
-        self.button2_tab_4.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
-
-        # ########### 5th Tab ###########
-        tab_5 = self.tabview.tab("LVQ")
-
-        self.label_tab_5 = customtkinter.CTkLabel(tab_5, text="LVQ Network")
-        self.label_tab_5.grid(row=0, column=0, padx=20, pady=20)
-
-        self.entry1_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Input")
-        self.entry1_tab_5.grid(row=1, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.entry2_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Labels")
-        self.entry2_tab_5.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.entry3_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Learning rate")
-        self.entry3_tab_5.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.entry4_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Test input")
-        self.entry4_tab_5.grid(row=4, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.button1_tab_5 = customtkinter.CTkButton(tab_5, fg_color="transparent", border_width=2,
-                                                     text="Train Network", text_color=("gray10", "#DCE4EE"))
-        self.button1_tab_5.grid(row=6, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
-
-        self.button2_tab_5 = customtkinter.CTkButton(tab_5, fg_color="transparent", border_width=2,
-                                                     text="Test Network", text_color=("gray10", "#DCE4EE"))
-        self.button2_tab_5.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
-        '''
-
     # ########### 3rd Tab ###########
     def setup_som_tab(self, tab):
         label_tab_3 = customtkinter.CTkLabel(tab, text="Kohonen SOM Network", font=("bold", 24))
@@ -551,8 +488,7 @@ class App(customtkinter.CTk):
 
             entry_num_points_per_class_som = customtkinter.CTkEntry(tab, placeholder_text="Number of points per class",
                                                                     textvariable=num_point_per_class_som)
-            entry_num_points_per_class_som.grid(row=1, column=1, columnspan=2, padx=(20, 0), pady=(20, 20),
-                                                sticky="nsew")
+            entry_num_points_per_class_som.grid(row=1, column=1, padx=(20, 0), pady=(20, 20))
 
             # Attach the trace callback to the text variable
             num_point_per_class_som.trace("w", parse_entry)
@@ -570,11 +506,10 @@ class App(customtkinter.CTk):
                     print("Invalid Number of classes format")
 
             label_num_classes_som = customtkinter.CTkLabel(tab, text="Num. of classes:")
-            label_num_classes_som.grid(row=2, column=0, padx=20, pady=20)
+            label_num_classes_som.grid(row=1, column=2, padx=20, pady=20)
 
             entry_num_classes_som = customtkinter.CTkEntry(tab, textvariable=num_classes_som)
-            entry_num_classes_som.grid(row=2, column=1, columnspan=2, padx=(20, 0), pady=(20, 20),
-                                                sticky="nsew")
+            entry_num_classes_som.grid(row=1, column=3, padx=(20, 0), pady=(20, 20))
 
             # Attach the trace callback to the text variable
             num_classes_som.trace("w", parse_entry)
@@ -592,11 +527,10 @@ class App(customtkinter.CTk):
                     print("Invalid number of neurons format")
 
             label_number_of_neurons_som = customtkinter.CTkLabel(tab, text="Num of neurons:")
-            label_number_of_neurons_som.grid(row=3, column=0, padx=20, pady=20)
+            label_number_of_neurons_som.grid(row=2, column=0, padx=20, pady=20)
 
             entry_number_of_neurons_som = customtkinter.CTkEntry(tab, textvariable=num_of_neurons_som)
-            entry_number_of_neurons_som.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20),
-                                             sticky="nsew")
+            entry_number_of_neurons_som.grid(row=2, column=1, padx=(20, 0), pady=(20, 20))
 
             # Attach the trace callback to the text variable
             num_of_neurons_som.trace("w", parse_entry)
@@ -614,10 +548,10 @@ class App(customtkinter.CTk):
                     print("Invalid input dimension format")
 
             label_input_dimension = customtkinter.CTkLabel(tab, text="Input dimension:")
-            label_input_dimension.grid(row=4, column=0, padx=20, pady=20)
+            label_input_dimension.grid(row=2, column=2, padx=20, pady=20)
 
             entry_input_dimension_som = customtkinter.CTkEntry(tab, textvariable=input_dim_som)
-            entry_input_dimension_som.grid(row=4, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+            entry_input_dimension_som.grid(row=2, column=3, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
             input_dim_som.trace("w", parse_entry)
@@ -635,10 +569,10 @@ class App(customtkinter.CTk):
                     print("Invalid learning rate format")
 
             label_learning_rate_som = customtkinter.CTkLabel(tab, text="Learning rate")
-            label_learning_rate_som.grid(row=5, column=0, padx=20, pady=20)
+            label_learning_rate_som.grid(row=3, column=0, padx=20, pady=20)
 
             entry_learning_rate_som = customtkinter.CTkEntry(tab, textvariable=lr_som)
-            entry_learning_rate_som.grid(row=5, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+            entry_learning_rate_som.grid(row=3, column=1, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
             lr_som.trace("w", parse_entry)
@@ -656,10 +590,10 @@ class App(customtkinter.CTk):
                     print("Invalid epoch max format")
 
             label_epoch_max_som = customtkinter.CTkLabel(tab, text="Epoch max:")
-            label_epoch_max_som.grid(row=6, column=0, padx=20, pady=20)
+            label_epoch_max_som.grid(row=3, column=2, padx=20, pady=20)
 
             entry_epoch_max_som = customtkinter.CTkEntry(tab, textvariable=epoch_max_som)
-            entry_epoch_max_som.grid(row=6, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+            entry_epoch_max_som.grid(row=3, column=3, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
             epoch_max_som.trace("w", parse_entry)
@@ -711,6 +645,17 @@ class App(customtkinter.CTk):
             except Exception as e:
                 print(f"An error occurred: {e}")
 
+        pil_image_random_data = Image.open(
+            r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\som\plot\random_data.jpeg")
+        resized_image_rand_data = pil_image_random_data.resize((180, 180))
+        image_rand_data = ImageTk.PhotoImage(resized_image_rand_data)
+
+        label_rand_data = customtkinter.CTkLabel(tab, text="Random Data", font=("bold", 18))
+        label_rand_data.grid(row=2, column=4, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        image_label_rand_data = customtkinter.CTkLabel(tab, image=image_rand_data, text="")
+        image_label_rand_data.grid(row=3, column=4, padx=(20, 0), pady=(5, 5), sticky="w")
+
         def train_som():
             num_neurons_str = num_of_neurons_som.get()
             input_dim_str = input_dim_som.get()
@@ -726,12 +671,26 @@ class App(customtkinter.CTk):
 
                 print("Training phase")
 
-                # Now, you can use the data to train your neural network using the SOM model
-                trained_weights = som_model.train(num_of_neurons, input_dim, self.data, learning_rate, epoch_max)
+                # Now, you can use the data to train your neural network usingas the SOM model
+                self.trained_weights = som_model.train(num_of_neurons, input_dim, self.data, learning_rate, epoch_max)
                 print("Training completed.")
 
             except Exception as e:
                 print(f"An error occurred: {e}")
+
+        def plot_som():
+            fig, ax = plt.subplots(figsize=(4, 4))
+
+            # Plot training data
+            ax.scatter(self.data[:, 0], self.data[:, 1], c='r', marker='x', label='Training Data')
+
+            # Plot trained weights
+            ax.scatter(self.trained_weights[:, 0], self.trained_weights[:, 1], c='b', marker='o', label='Neurons')
+
+            ax.set_title("Trained weights")
+            ax.legend()
+
+            plt.show()
 
         button_generate_data_som = customtkinter.CTkButton(tab, fg_color="#219ebc", border_width=2,
                                                            text="Generate data", text_color="white",
@@ -740,17 +699,263 @@ class App(customtkinter.CTk):
         button_generate_data_som.grid(row=7, column=0, padx=(20, 20), pady=(20, 20))
 
         button_train_network = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                                       text="Train Network", text_color=("gray10", "#DCE4EE"),
                                                        command=train_som)
         button_train_network.grid(row=7, column=1, padx=(20, 20), pady=(20, 20))
 
         button_plot_results = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                text="Plot results", text_color=("gray10", "#DCE4EE"))
+                                                      text="Plot results", text_color=("gray10", "#DCE4EE"),
+                                                      command=plot_som)
         button_plot_results.grid(row=7, column=2, padx=(20, 20), pady=(20, 20))
+
+    # ########### 4th Tab ###########
+    def setup_autoencoder(self, tab):
+
+        learning_rate_ac = StringVar()
+        momentum_ac = StringVar()
+        epoch_max_ac = StringVar()
+
+        label_tab = customtkinter.CTkLabel(tab, text="AutoEncoder Network", font=("bold",  24))
+        label_tab.grid(row=0, column=0, padx=20, pady=20)
+
+        def entry_learning_rate_ac():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = float(learning_rate_ac.get())
+                    # Convert the input value to an integer
+                    learning_rate_ac_value = float(input_value_str)
+                    # Use the learning_rate_value here
+                    print("Learning rate:", learning_rate_ac_value)
+                except ValueError:
+                    print("Invalid Learning rate format")
+
+            label_learning_rate = customtkinter.CTkLabel(tab, text="Learning rate")
+            label_learning_rate.grid(row=1, column=0, padx=(20, 0), pady=(20, 20))
+
+            entry_learning_rate = customtkinter.CTkEntry(tab, textvariable=learning_rate_ac)
+            entry_learning_rate.grid(row=1, column=1, padx=(20, 0), pady=(20, 20))  # , sticky="nsew"
+            # Attach the trace callback to the text variable
+            learning_rate_ac.trace("w", parse_entry)
+
+        def entry_momentum_rate_ac():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = float(momentum_ac.get())
+                    # Convert the input value to an integer
+                    momentum_ac_value = float(input_value_str)
+                    # Use the learning_rate_value here
+                    print("Momentum rate:", momentum_ac_value)
+                except ValueError:
+                    print("Invalid Momentum rate format")
+
+            label_momentum_rate = customtkinter.CTkLabel(tab, text="Momentum rate")
+            label_momentum_rate.grid(row=1, column=2, padx=(20, 0), pady=(20, 20))  # , sticky="nsew"
+
+            entry_momentum_rate = customtkinter.CTkEntry(tab, textvariable=momentum_ac)
+            entry_momentum_rate.grid(row=1, column=3, padx=(20, 0), pady=(20, 20))
+
+            # Attach the trace callback to the text variable
+            momentum_ac.trace("w", parse_entry)
+
+        def entry_epoch_max_ac():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = int(epoch_max_ac.get())  # Corrected to get epoch max, not momentum
+                    # Convert the input value to an integer
+                    epoch_max_ac_value = int(input_value_str)
+                    print("Epoch Max:", epoch_max_ac_value)
+                except ValueError:
+                    print("Invalid Epoch Max format")
+
+            label_epoch_max = customtkinter.CTkLabel(tab, text="Epoch max")
+            label_epoch_max.grid(row=2, column=0, padx=(20, 0), pady=(20, 20))
+
+            entry_epoch_max = customtkinter.CTkEntry(tab, textvariable=epoch_max_ac)
+            entry_epoch_max.grid(row=2, column=1, padx=(20, 0), pady=(20, 20))
+
+            # Attach the trace callback to the text variable
+            epoch_max_ac.trace("w", parse_entry)
+
+        entry_learning_rate_ac()
+        entry_momentum_rate_ac()
+        entry_epoch_max_ac()
+
+        # Images for the labels
+        pil_image1 = Image.open(
+            r"C:\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\autoencoder\labels\rat.jpeg")
+        resized_image1 = pil_image1.resize((240, 240))
+        image1 = ImageTk.PhotoImage(resized_image1)
+
+        pil_image2 = Image.open(
+            r"C:\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\autoencoder\labels\chicken.jpeg")
+        resized_image2 = pil_image2.resize((240, 240))
+        image2 = ImageTk.PhotoImage(resized_image2)
+
+        pil_image3 = Image.open(
+            r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\autoencoder\labels\cat.jpeg")
+        resized_image3 = pil_image3.resize((240, 240))
+        image3 = ImageTk.PhotoImage(resized_image3)
+
+        # select the image that you want to decode, Variable to store the image of choice
+        image_choice_var = customtkinter.StringVar(value="First Image")  # Default is "First Image"
+
+        # Radio buttons for selecting the Images
+        first_image_radio = customtkinter.CTkRadioButton(tab, text="First Image",
+                                                         variable=image_choice_var, value="First Image")
+        first_image_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        first_image_label = customtkinter.CTkLabel(tab, image=image1, text="")
+        first_image_label.grid(row=4, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        second_image_radio = customtkinter.CTkRadioButton(tab, text="Second Image",
+                                                          variable=image_choice_var, value="Second Image")
+        second_image_radio.grid(row=3, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        second_image_label = customtkinter.CTkLabel(tab, image=image2, text="")
+        second_image_label.grid(row=4, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        third_image_radio = customtkinter.CTkRadioButton(tab, text="Third Image",
+                                                         variable=image_choice_var, value="Third Image")
+        third_image_radio.grid(row=3, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        third_image_label = customtkinter.CTkLabel(tab, image=image3, text="")
+        third_image_label.grid(row=4, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        # ######## OBTAIN THE IMAGE PATHS ########
+        img_1_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\autoencoder\data\img_1.png"
+        img_2_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\autoencoder\data\img_2.png"
+        img_3_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\autoencoder\data\img_3.png"
+
+        # ######## LOAD THE IMAGES ########
+        img_1 = Image.open(img_1_path).convert("RGB")
+        img_2 = Image.open(img_2_path).convert("RGB")
+        img_3 = Image.open(img_3_path).convert("RGB")
+
+        # ######## NORMALIZE THE IMAGES ########
+        img_1_array = np.array(img_1) # / 255.0 * 2 - 1
+        img_2_array = np.array(img_2) # / 255.0 * 2 - 1
+        img_3_array = np.array(img_3) # / 255.0 * 2 - 1
+
+        # ######## Function to obtain the choosen image ########
+        def get_selected_image_data():
+            selected_value = image_choice_var.get()
+            if selected_value == "First Image":
+                return img_1_array
+            elif selected_value == "Second Image":
+                return img_2_array
+            elif selected_value == "Third Image":
+                return img_3_array
+            else:
+                return None
+
+        autoencoder_model = AutoEncoder()
+
+        # loss_ac, latent_space, decoded_inputs_ac = model.train(X_train_ac, alpha_ac, momentum_ac, epoch_max_ac)
+
+        def train_ac():
+            data = get_selected_image_data()
+            if data is not None:
+                learning_rate_ac_value = float(learning_rate_ac.get())
+                momentum_ac_value = float(momentum_ac.get())
+                epoch_max_ac_value = int(epoch_max_ac.get())
+
+                loss, latent_space, self.decoded_inputs = autoencoder_model.train(data, learning_rate_ac_value, momentum_ac_value, epoch_max_ac_value)
+            else:
+                print("The model need's the hyperparameters")
+
+        # Modify the function call to plot_images
+        def reconstruct_selected_image():
+            data = get_selected_image_data()
+            if data is not None:
+                reconstructed_image = self.decoded_inputs.reshape(16, 16, 3)  # This should be a NumPy array. If it's not, you'll have to adjust this part.
+                if isinstance(reconstructed_image, Image.Image):
+                    # If decoded_inputs is still a PIL Image, convert it to a NumPy array
+                    reconstructed_image = Image.fromarray(np.uint8(self.decoded_inputs))
+
+                original_img = [(data)]
+
+                self.plot_images(original_img, reconstructed_image)
+
+
+        button_train_ac = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                                command=train_ac)
+        button_train_ac.grid(row=6, column=0, padx=(20, 20), pady=(20, 20))
+
+        button_reconstruction_ac = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                            text="Reconstruct image",
+                                                            text_color=("gray10", "#DCE4EE"),
+                                                            anchor="w", command=reconstruct_selected_image)
+        button_reconstruction_ac.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+
+        button_plot_loss_ac = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                text="Plot loss", text_color=("gray10", "#DCE4EE"))
+        button_plot_loss_ac.grid(row=6, column=2, padx=(20, 20), pady=(20, 20))
+
+    def plot_images(self, original_image, reconstructed_img):
+        """Plot the original, noisy, and reconstructed images."""
+        plt.figure(figsize=(8, 4))
+
+        # Reshape and convert the original image to a NumPy array
+        original_image_array = np.array(original_image[0])
+        original_image_array = original_image_array.astype(np.uint8) #+ 1) / 2 * 255
+
+        # Plot the original image
+        plt.subplot(1, 2, 1)
+        plt.imshow(original_image_array)
+        plt.title('Original Image')
+        plt.axis('off')  # Turn off axes
+
+        # Plot the reconstructed image
+        plt.subplot(1, 2, 2)
+        plt.imshow(reconstructed_img)
+        plt.title('Reconstructed Image')
+        plt.axis('off')
+
+        plt.tight_layout()
+        plt.show()
 
     def exit(self):
         self.destroy()
 
+
+'''
+
+
+        # Instantiate an object of the Backpropagation class
+        self.autoencoder_model = AutoEncoder()
+
+        
+
+        # ########### 5th Tab ###########
+        tab_5 = self.tabview.tab("LVQ")
+
+        self.label_tab_5 = customtkinter.CTkLabel(tab_5, text="LVQ Network")
+        self.label_tab_5.grid(row=0, column=0, padx=20, pady=20)
+
+        self.entry1_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Input")
+        self.entry1_tab_5.grid(row=1, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+        self.entry2_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Labels")
+        self.entry2_tab_5.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+        self.entry3_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Learning rate")
+        self.entry3_tab_5.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+        self.entry4_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Test input")
+        self.entry4_tab_5.grid(row=4, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+
+        self.button1_tab_5 = customtkinter.CTkButton(tab_5, fg_color="transparent", border_width=2,
+                                                     text="Train Network", text_color=("gray10", "#DCE4EE"))
+        self.button1_tab_5.grid(row=6, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+
+        self.button2_tab_5 = customtkinter.CTkButton(tab_5, fg_color="transparent", border_width=2,
+                                                     text="Test Network", text_color=("gray10", "#DCE4EE"))
+        self.button2_tab_5.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        '''
 
 if __name__ == "__main__":
     app = App()
