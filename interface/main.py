@@ -12,7 +12,8 @@ from neural_networks.hopfield import HopfieldNetwork
 from neural_networks.backprop import Backpropagation
 from neural_networks.som_kohonen import SOM
 from neural_networks.autoencoder import AutoEncoder
-# from neural_networks.lvq import import LVQ
+from neural_networks.lvq import LvqNetwork
+
 
 customtkinter.set_appearance_mode("dark")
 customtkinter.set_default_color_theme("blue")
@@ -97,11 +98,8 @@ class App(customtkinter.CTk):
                 self.setup_som_tab(tab)
             if tab_name == "AutoEncoder":
                 self.setup_autoencoder(tab)
-            '''
             if tab_name == "LVQ":
-                self.setup_lvq_tab(tab)
-
-            '''
+                self.setup_lvq(tab)
 
     # ########### 1st Tab ###########
     def setup_hopfield_tab(self, tab):
@@ -932,26 +930,201 @@ class App(customtkinter.CTk):
         plt.tight_layout()
         plt.show()
 
+    # ########### 5th Tab ###########
+    def setup_lvq(self, tab):
+        label_lvq = customtkinter.CTkLabel(tab, text="LVQ Network", font=("bold", 24))
+        label_lvq.grid(row=0, column=0, padx=20, pady=20)
+
+        input_lvq = StringVar()
+        labels_lvq = StringVar()
+        learning_rate_lvq = StringVar()
+        epoch_max_lvq = StringVar()
+
+        def entry_input_lvq():
+            def parse_input_string(input_string):
+                # Remove unnecessary characters and split the string into individual elements
+                elements = input_string.replace("[", "").replace("]", "").split(",")
+
+                # Convert elements to floats
+                try:
+                    elements = [float(element.strip()) for element in elements]
+                except ValueError:
+                    return None
+
+                # Check if the number of elements is divisible by 2 (assuming each data point has two coordinates)
+                if len(elements) % 2 != 0:
+                    return None
+
+                # Create sublists of coordinates
+                sub_lists = [elements[i:i + 2] for i in range(0, len(elements), 2)]
+
+                return sub_lists
+
+            def print_input_list(input_list):
+                if input_list is not None:
+                    print(input_list)
+                    # You can perform further processing or pass this data to your LVQ algorithm
+                else:
+                    print("Invalid input format")
+
+            def print_input_as_list(*args):
+                input_value_str = input_lvq.get()
+                input_list_parsed = parse_input_string(input_value_str)
+                print_input_list(input_list_parsed)
+
+            label_input = customtkinter.CTkLabel(tab, text="Input")
+            label_input.grid(row=1, column=0, padx=(20, 0), pady=(20, 20))
+
+            entry_input = customtkinter.CTkEntry(tab, textvariable=input_lvq)
+            entry_input.grid(row=1, column=1, padx=(20, 0), pady=(20, 20))
+
+            input_lvq.trace("w", print_input_as_list)
+
+        def entry_labels_lvq():
+            def parse_input_string(input_string):
+                # Remove brackets and split the string into individual elements
+                elements = input_string.replace("[", "").replace("]", "").split(",")
+
+                # Convert elements to integers
+                try:
+                    elements = [int(element) for element in elements]
+                except ValueError:
+                    return None
+
+                # Check if each element forms a single-element sublist
+                sub_lists = [[element] for element in elements]
+
+                return sub_lists
+
+            def print_input_list(input_list):
+                if input_list is not None:
+                    print(input_list)
+                else:
+                    print("Invalid input format")
+
+            def print_input_as_list(*args):
+                input_value_str = labels_lvq.get()
+                input_list_parsed = parse_input_string(input_value_str)
+                print_input_list(input_list_parsed)
+
+            label_labels_lvq = customtkinter.CTkLabel(tab, text="Desired output")
+            label_labels_lvq.grid(row=1, column=2, padx=(20, 0), pady=(20,0))
+
+            # Use desired_output as the text variable for the entry widget
+            entry_desired_output_bp = customtkinter.CTkEntry(tab, textvariable=labels_lvq)
+            entry_desired_output_bp.grid(row=1, column=3, padx=(20, 0), pady=(20, 20))
+
+            # Attach the trace callback to the text variable
+            labels_lvq.trace("w", print_input_as_list)
+
+        def entry_learning_rate_lvq():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = learning_rate_lvq.get()
+                    # Convert the input value to a float
+                    learning_rate_value = float(input_value_str)
+                    # Use the learning_rate_value here
+                    print("Learning rate:", learning_rate_value)
+                except ValueError:
+                    print("Invalid learning rate format")
+
+            label_learning_rate_lvq = customtkinter.CTkLabel(tab, text="Learning rate", font=("bold", 14))
+            label_learning_rate_lvq.grid(row=2, column=0, padx=20, pady=20)
+
+            # Use learning_rate as the text variable for the entry widget
+            entry_learning_rate_lvq = customtkinter.CTkEntry(tab, textvariable=learning_rate_lvq)
+            entry_learning_rate_lvq.grid(row=2, column=1, padx=(20, 0), pady=(20, 20))
+
+            # Attach the trace callback to the text variable
+            learning_rate_lvq.trace("w", parse_entry)
+
+        def entry_epoch_max_lvq():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = int(epoch_max_lvq.get())
+                    # Convert the input value to an integer
+                    epoch_max_hop_value = int(input_value_str)
+                    # Use the learning_rate_value here
+                    print("Epoch max:", epoch_max_hop_value)
+                except ValueError:
+                    print("Invalid Epoch max format")
+
+            label_epoch_max_lvq = customtkinter.CTkLabel(tab, text="Epoch max:", font=("bold", 14))
+            label_epoch_max_lvq.grid(row=2, column=2, padx=20, pady=20)
+
+            # Use learning_rate as the text variable for the entry widget
+            entry_epoch_max_lvq = customtkinter.CTkEntry(tab, textvariable=epoch_max_lvq)
+            entry_epoch_max_lvq.grid(row=2, column=3, padx=(20), pady=(20))
+
+            # Attach the trace callback to the text variable
+            epoch_max_lvq.trace("w", parse_entry)
+
+        entry_input_lvq()
+        entry_labels_lvq()
+        entry_learning_rate_lvq()
+        entry_epoch_max_lvq()
+
+        lvq_model = LvqNetwork()
+
+        def train_lvq():
+            input_data_str = input_lvq.get()
+            desired_output_str = labels_lvq.get()
+            learning_rate_str = learning_rate_lvq.get()
+            epoch_max_lvq_str = epoch_max_lvq.get()
+
+            try:
+                input_data = np.array(eval(input_data_str))
+                desired_output = np.array(eval(desired_output_str))
+                learning_rate = float(learning_rate_str)
+                epoch_max = int(epoch_max_lvq_str)
+
+                trained_vectors = lvq_model.train(input_data, desired_output, learning_rate, epoch_max)
+
+                print("Training completed")
+
+                # Plot the trained vectors and data
+                plot(input_data, trained_vectors, desired_output, "Trained Vectors and Data", test=True)
+            except Exception as e:
+                print(f"An error occurred: {e}")
+
+        button_train_ac = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                  text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                                  command=train_lvq)
+        button_train_ac.grid(row=3, column=0, padx=(20, 20), pady=(20, 20))
+
+        '''
+        button_test_lvq = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                           text="Reconstruct image",
+                                                           text_color=("gray10", "#DCE4EE"),
+                                                           command=test_lvq)
+        button_test_lvq.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+
+        '''
+
+    def plot(data, vectors, labels, title):
+        with plt.style.context('seaborn-darkgrid'):
+            plt.figure(figsize=(8, 6))
+            plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis', marker='o', label='Data', alpha=0.6)
+            plt.scatter(vectors[:, 0], vectors[:, 1], c='red', marker='x', s=100, label='Vectors')
+
+            for i, label in enumerate(labels):
+                plt.text(data[i, 0], data[i, 1], str(label), color='black', fontsize=10, ha='center', va='center')
+
+            plt.xlabel('Feature 1')
+            plt.ylabel('Feature 2')
+            plt.title(title)
+            plt.legend()
+            plt.grid(True)
+            plt.show()
+
     def exit(self):
         self.destroy()
 
 
-'''
+'''     
 
-
-        # Instantiate an object of the Backpropagation class
-        self.autoencoder_model = AutoEncoder()
-
-        
-
-        # ########### 5th Tab ###########
-        tab_5 = self.tabview.tab("LVQ")
-
-        self.label_tab_5 = customtkinter.CTkLabel(tab_5, text="LVQ Network")
-        self.label_tab_5.grid(row=0, column=0, padx=20, pady=20)
-
-        self.entry1_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Input")
-        self.entry1_tab_5.grid(row=1, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
         self.entry2_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Labels")
         self.entry2_tab_5.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
