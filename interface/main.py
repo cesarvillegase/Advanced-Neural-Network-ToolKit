@@ -862,7 +862,7 @@ class App(customtkinter.CTk):
                 momentum_ac_value = float(momentum_ac.get())
                 epoch_max_ac_value = int(epoch_max_ac.get())
 
-                loss, latent_space, self.decoded_inputs = autoencoder_model.train(data, learning_rate_ac_value, momentum_ac_value, epoch_max_ac_value)
+                self.loss, latent_space, self.decoded_inputs = autoencoder_model.train(data, learning_rate_ac_value, momentum_ac_value, epoch_max_ac_value)
             else:
                 print("The model need's the hyperparameters")
 
@@ -879,6 +879,19 @@ class App(customtkinter.CTk):
 
                 self.plot_images(original_img, reconstructed_image)
 
+        def plot_loss_from_training():
+            # Plot the loss directly using the loss values obtained during the test
+            loss_values = self.loss
+
+            plt.figure(figsize=(8, 6))  # Adjust the figure size as per your preference
+            plt.plot(range(1, len(loss_values) + 1), loss_values, color='blue', label='Mean Square Error')
+            plt.title("Training loss")
+            plt.xlabel('Epochs')
+            plt.ylabel('Loss')
+            plt.legend()
+
+            plt.show()
+
 
         button_train_ac = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
                                                 text="Train Network", text_color=("gray10", "#DCE4EE"),
@@ -892,7 +905,8 @@ class App(customtkinter.CTk):
         button_reconstruction_ac.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         button_plot_loss_ac = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                text="Plot loss", text_color=("gray10", "#DCE4EE"))
+                                                text="Plot loss", text_color=("gray10", "#DCE4EE"),
+                                                      command=plot_loss_from_training)
         button_plot_loss_ac.grid(row=6, column=2, padx=(20, 20), pady=(20, 20))
 
     def plot_images(self, original_image, reconstructed_img):
