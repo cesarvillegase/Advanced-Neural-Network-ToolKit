@@ -12,11 +12,11 @@ class AutoEncoder:
 
     @staticmethod
     def sigmoid(x):
-        return 1 / (1 + np.exp(-x))
+        return float(1) / (float(1) + np.exp(-x))
 
     @staticmethod
     def sigmoid_dev(x):
-        return x * (1 - x)
+        return x * (float(1) - x)
 
     def train(self, data, alpha, momentum, epoch_max):
         inputs = data / 255.0
@@ -24,7 +24,7 @@ class AutoEncoder:
         expected_output = inputs
 
         self.input_neurons = inputs.shape[0]
-        self.hidden_neurons = 1
+        self.hidden_neurons = 3
         self.output_neurons = self.input_neurons
 
         weights_input = 2 * np.random.random((self.input_neurons, self.hidden_neurons)) - 1
@@ -68,7 +68,7 @@ class AutoEncoder:
             w_old_input = weights_input.copy()
             weights_input = w_new_input
 
-            if self.epoch % 100 == 0:
+            if self.epoch % 200 == 0:
                 print(f"Epoch: {self.epoch} Error: {mse}")
 
             self.epoch += 1
