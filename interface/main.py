@@ -344,7 +344,6 @@ class App(ctk.CTk):
             self.nand_data_array = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
             self.nand_labels_array = np.array([[1], [1], [1], [0]])
 
-
         data_options()
 
         # ######## Function to obtain the chosen dataset ########
@@ -369,11 +368,16 @@ class App(ctk.CTk):
             else:
                 print("An error occurred")
 
+        self.label_results = ctk.CTkLabel(tab, text="", wraplength=300)
+        self.label_results.grid(row=6, column=0, padx=20, pady=20, sticky="ew")
+
+        # test the network
         def test_backprop():
             data, label = get_selected_dataset()
             if data is not None and label is not None:
                 print("Test phase")
-                backpropagation_model.test(data, label)
+                _, _, results_string = backpropagation_model.test(data, label)
+                self.label_results.configure(text=results_string)
             else:
                 print("An error occurred")
 
@@ -382,30 +386,15 @@ class App(ctk.CTk):
             # Plot the loss directly using the loss values obtained during the test
             loss_values = backpropagation_model.loss
 
-            # Clear the previous plot, if any
-            canvas_tab_2.delete("all")
-
-            # Clear the previous plot if it exists
-            if hasattr(self, 'canvas'):
-                self.canvas.get_tk_widget().destroy()
-                plt.close(self.fig)
-
-            # Create a new figure for the plot
-            self.fig = plt.Figure(figsize=(4, 3))
-            ax = self.fig.add_subplot(111)
-            ax.plot(range(1, len(loss_values) + 1), loss_values, color='blue', label='Mean Square Error')
-            ax.set_title("Training loss")
-            ax.set_xlabel('Epochs')
-            ax.set_ylabel('Loss')
-            ax.legend()
-
-            # Embed the plot into the Tkinter canvas
-            self.canvas = FigureCanvasTkAgg(self.fig, master=canvas_tab_2)
-            self.canvas.draw()
-            self.canvas.get_tk_widget().pack(fill='both', expand=True)
-
-        canvas_tab_2 = ctk.CTkCanvas(tab, width=0, height=0)
-        canvas_tab_2.grid(row=5, column=4, padx=(30, 0), pady=0)
+            with plt.style.context('seaborn-darkgrid'):
+                plt.figure(figsize=(6, 4))
+                plt.plot(range(1, len(loss_values) + 1), loss_values, color='blue', label='Mean Square Error')
+                plt.xlabel('Epochs')
+                plt.ylabel('Loss')
+                plt.title("Training Loss")
+                plt.legend()
+                plt.grid(True)
+                plt.show()
 
         button_train_bp = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                                   text="Train Network", text_color=("gray10", "#DCE4EE"),

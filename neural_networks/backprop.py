@@ -73,6 +73,7 @@ class Backpropagation:
     # =============TEST PHASE=============
     def test(self, inputs, desired_output):
         global output_activation
+        results = ""
         # Test for the neural network trained
         for i in range(inputs.shape[0]):
             hidden_activation = self.sigmoid(np.dot(inputs[i], self.weights_input))
@@ -83,7 +84,10 @@ class Backpropagation:
             print("Input:", inputs[i, 1:], "| Expected:", desired_output[i],
                   "| Predicted:", np.round(output_activation))
 
-        return self.loss, output_activation
+            # Accumulate results
+            results += f"Input: {inputs[i, 1:]} | Expected: {desired_output[i]} | Predicted: {np.round(output_activation)}\n"
+
+        return self.loss, output_activation, results
 
 
 # Function to plot the loss 
