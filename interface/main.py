@@ -1,8 +1,8 @@
-from tkinter import StringVar # filedialog as fd,
+from tkinter import StringVar  # filedialog as fd,
 from PIL import Image, ImageTk
 # from tkinter.messagebox import showinfo
 
-import customtkinter
+import customtkinter as ctk
 import matplotlib.pyplot as plt
 import numpy as np
 from customtkinter import CTkRadioButton
@@ -14,12 +14,11 @@ from neural_networks.som_kohonen import SOM
 from neural_networks.autoencoder import AutoEncoder
 from neural_networks.lvq import LvqNetwork
 
+ctk.set_appearance_mode("system")
+ctk.set_default_color_theme("blue")
 
-customtkinter.set_appearance_mode("dark")
-customtkinter.set_default_color_theme("blue")
 
-
-class App(customtkinter.CTk):
+class App(ctk.CTk):
     def __init__(self):
         super().__init__()
 
@@ -37,7 +36,7 @@ class App(customtkinter.CTk):
         self.grid_rowconfigure((0, 1, 2), weight=1)
 
     def create_sidebar_frame(self):
-        self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
+        self.sidebar_frame = ctk.CTkFrame(self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
         self.sidebar_frame.grid_rowconfigure(4, weight=1)
 
@@ -45,17 +44,17 @@ class App(customtkinter.CTk):
 
     def setup_sidebar_widgets(self):
         # Create a logo label inside the sidebar
-        logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="ANN ToolKit",
-                                            font=customtkinter.CTkFont(size=20, weight="bold"))
+        logo_label = ctk.CTkLabel(self.sidebar_frame, text="ANN ToolKit",
+                                            font=ctk.CTkFont(size=20, weight="bold"))
         logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
         # Label for the levels of abstraction
-        levels_of_abstraction_label = customtkinter.CTkLabel(self.sidebar_frame, text="Levels:",
+        levels_of_abstraction_label = ctk.CTkLabel(self.sidebar_frame, text="Levels:",
                                                              anchor="w")
         levels_of_abstraction_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
 
         # Variable to store the level of abstraction choice
-        abstraction_level_var = customtkinter.StringVar(
+        abstraction_level_var = ctk.StringVar(
             value="Low Level")  # Default value can be "Low Level" or "High Level"
 
         # Radio button for Low Level
@@ -69,20 +68,20 @@ class App(customtkinter.CTk):
         high_level_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # Create the label for the author and the description
-        author_label = customtkinter.CTkLabel(self.sidebar_frame, text="Created by:",
-                                              font=customtkinter.CTkFont(size=14, weight="normal"))
+        author_label = ctk.CTkLabel(self.sidebar_frame, text="Created by:",
+                                              font=ctk.CTkFont(size=14, weight="normal"))
         author_label.grid(row=4, column=0, padx=20, pady=(10, 0))
-        author1_label = customtkinter.CTkLabel(self.sidebar_frame, text="Cesar A Villegas Espindola",
-                                               font=customtkinter.CTkFont(size=14, weight="normal"))
+        author1_label = ctk.CTkLabel(self.sidebar_frame, text="Cesar A Villegas Espindola",
+                                               font=ctk.CTkFont(size=14, weight="normal"))
         author1_label.grid(row=5, column=0, padx=20, pady=(10, 20))
 
-        exit_button = customtkinter.CTkButton(self.sidebar_frame, fg_color="red", text="Close App",
+        exit_button = ctk.CTkButton(self.sidebar_frame, fg_color="red", text="Close App",
                                               command=self.exit, anchor="w")
         exit_button.grid(row=6, column=0, padx=20, pady=(10, 20))
 
     def create_tabview(self):
         # Create tabview
-        tabview = customtkinter.CTkTabview(self, width=250)
+        tabview = ctk.CTkTabview(self, width=250)
         tabview.grid(row=0, column=1, padx=(10, 0), pady=(10, 0), sticky="nsew")
         self.setup_tabs(tabview)
 
@@ -103,8 +102,8 @@ class App(customtkinter.CTk):
 
     # ########### 1st Tab ###########
     def setup_hopfield_tab(self, tab):
-        label_hop = customtkinter.CTkLabel(tab, text="Hopfield Network", font=("bold", 24))
-        label_hop.grid(row=0, column=0, padx=20, pady=20)
+        label_hop = ctk.CTkLabel(tab, text="Hopfield Network", font=("bold", 24))
+        label_hop.grid(row=0, column=0, padx=20, pady=20, sticky="w")
 
         epoch_max_hop = StringVar()
 
@@ -120,12 +119,12 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid Epoch max format")
 
-            label_epoch_max_hop = customtkinter.CTkLabel(tab, text="Epoch max:", font=("bold", 14))
+            label_epoch_max_hop = ctk.CTkLabel(tab, text="Epoch max:", font=("bold", 14))
             label_epoch_max_hop.grid(row=1, column=0, padx=20, pady=20)
 
             # Use learning_rate as the text variable for the entry widget
-            entry_epoch_max_hop = customtkinter.CTkEntry(tab, textvariable=epoch_max_hop)
-            entry_epoch_max_hop.grid(row=1, column=1, columnspan=1, padx=(20), pady=(20), sticky="nsew")
+            entry_epoch_max_hop = ctk.CTkEntry(tab, textvariable=epoch_max_hop)
+            entry_epoch_max_hop.grid(row=1, column=1, padx=(20), pady=(20))
 
             # Attach the trace callback to the text variable
             epoch_max_hop.trace("w", parse_entry)
@@ -149,28 +148,28 @@ class App(customtkinter.CTk):
         image3 = ImageTk.PhotoImage(resized_image3)
 
         # select the image that you want to decode, Variable to store the image of choice
-        image_choice_var = customtkinter.StringVar(value="First Image")  # Default is "First Image"
+        image_choice_var = ctk.StringVar(value="First Image")  # Default is "First Image"
 
         # Radio buttons for selecting the Images
-        first_image_radio = customtkinter.CTkRadioButton(tab, text="First Image",
+        first_image_radio = ctk.CTkRadioButton(tab, text="First Image",
                                                          variable=image_choice_var, value="First Image")
         first_image_radio.grid(row=4, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        first_image_label = customtkinter.CTkLabel(tab, image=image1, text="")
+        first_image_label = ctk.CTkLabel(tab, image=image1, text="")
         first_image_label.grid(row=5, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        second_image_radio = customtkinter.CTkRadioButton(tab, text="Second Image",
+        second_image_radio = ctk.CTkRadioButton(tab, text="Second Image",
                                                           variable=image_choice_var, value="Second Image")
         second_image_radio.grid(row=4, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        second_image_label = customtkinter.CTkLabel(tab, image=image2, text="")
+        second_image_label = ctk.CTkLabel(tab, image=image2, text="")
         second_image_label.grid(row=5, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        third_image_radio = customtkinter.CTkRadioButton(tab, text="Third Image",
+        third_image_radio = ctk.CTkRadioButton(tab, text="Third Image",
                                                          variable=image_choice_var, value="Third Image")
         third_image_radio.grid(row=4, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        third_image_label = customtkinter.CTkLabel(tab, image=image3, text="")
+        third_image_label = ctk.CTkLabel(tab, image=image3, text="")
         third_image_label.grid(row=5, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # ######## OBTAIN THE IMAGE PATHS ########
@@ -200,7 +199,7 @@ class App(customtkinter.CTk):
         img_2_wn_array = np.array(img_2_wn) / 255.0 * 2 - 1
         img_3_wn_array = np.array(img_3_wn) / 255.0 * 2 - 1
 
-        # ######## Function to obtain the choosen image ########
+        # ######## Function to obtain the chosen image ########
         def get_selected_image_data():
             selected_value = image_choice_var.get()
             if selected_value == "First Image":
@@ -220,6 +219,7 @@ class App(customtkinter.CTk):
                     epoch_max_hop_value = int(epoch_max_hop.get())
                     self.hopfield_model = HopfieldNetwork(epoch_max=epoch_max_hop_value)
                     self.hopfield_model.train([data])
+                    print("Training phase completed")
                 else:
                     print("Epoch max needs to be an integer value.")
 
@@ -232,26 +232,23 @@ class App(customtkinter.CTk):
                 original_img = [((data + 1) / 2 * 255).astype(np.uint8)]
                 noisy_img = [((noisy_data + 1) / 2 * 255).astype(np.uint8)]
                 rec_img = [((reconstructed_image + 1) / 2 * 255).astype(np.uint8)]
-                self.plot_images(original_img, noisy_img, rec_img)
+                self.plot_images_hop(original_img, noisy_img, rec_img)
+                print("Reconstruction phase completed")
 
         # Create buttons for training and reconstruction
-        button_train_hop = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+        button_train_hop = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                                    text="Train algorithm",
                                                    text_color=("gray10", "#DCE4EE"),
                                                    anchor="w", command=train_hopfield)
-        button_train_hop.grid(row=6, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        button_train_hop.grid(row=6, column=0, padx=(20, 20), pady=(20, 20))
 
-        button_reconstruction_hop = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+        button_reconstruction_hop = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                                             text="Reconstruct image",
                                                             text_color=("gray10", "#DCE4EE"),
                                                             anchor="w", command=reconstruct_selected_image)
-        button_reconstruction_hop.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        button_reconstruction_hop.grid(row=6, column=1, padx=(20, 20), pady=(20, 20))
 
-        # Create a canvas for the reconstructed images
-        canvas_plot = customtkinter.CTkCanvas(tab, width=0, height=0)
-        canvas_plot.grid(row=3, column=4, padx=0, pady=0)
-
-    def plot_images(self, original_img, noisy_img, reconstructed_img):
+    def plot_images_hop(self, original_img, noisy_img, reconstructed_img):
         """Plot the original, noisy, and reconstructed images."""
         plt.figure(figsize=(12, 4))
         imgs = [original_img[0], noisy_img[0],
@@ -267,89 +264,13 @@ class App(customtkinter.CTk):
 
     # ########### 2nd Tab ###########
     def setup_backprop_tab(self, tab):
-        label_tab_2 = customtkinter.CTkLabel(tab, text="Backpropagation Network")
-        label_tab_2.grid(row=0, column=0, padx=20, pady=20)
+        label_tab_backprop = ctk.CTkLabel(tab, text="Backpropagation Network", font=("bold", 24))
+        label_tab_backprop.grid(row=0, column=0, padx=20, pady=20, sticky="w")
 
         # Instantiate an object of the Backpropagation class
         backpropagation_model = Backpropagation(input_neurons=3, hidden_neurons=3, output_neurons=1)
 
-        input_bp = StringVar()
-        desired_output_bp = StringVar()
         learning_rate_bp = StringVar()
-
-        def entry_input_bp():
-            def parse_input_string(input_string):
-                # Remove brackets and split the string into individual elements
-                elements = input_string.replace("[", "").replace("]", "").split(",")
-
-                # Convert elements to integers
-                try:
-                    elements = [int(element) for element in elements]
-                except ValueError:
-                    return None
-
-                # Determine the sublist length based on the number of elements
-                sublist_length = len(elements) // 4  # Assuming there are four sub lists in the input
-
-                # Check if the number of elements is divisible by the calculated sublist_length
-                if len(elements) % sublist_length != 0:
-                    return None
-
-                # Create sublist
-                sub_lists = [elements[i:i + sublist_length] for i in range(0, len(elements), sublist_length)]
-
-                return sub_lists
-
-            def print_input_list(input_list):
-                if input_list is not None:
-                    print(input_list)
-                else:
-                    print("Invalid input format")
-
-            def print_input_as_list(*args):
-                input_value_str = input_bp.get()
-                input_list_parsed = parse_input_string(input_value_str)
-                print_input_list(input_list_parsed)
-
-            self.entry_input_bp = customtkinter.CTkEntry(tab, placeholder_text="Input", textvariable=input_bp)
-            self.entry_input_bp.grid(row=1, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-            input_bp.trace("w", print_input_as_list)
-
-        def entry_desired_output_bp():
-            def parse_input_string(input_string):
-                # Remove brackets and split the string into individual elements
-                elements = input_string.replace("[", "").replace("]", "").split(",")
-
-                # Convert elements to integers
-                try:
-                    elements = [int(element) for element in elements]
-                except ValueError:
-                    return None
-
-                # Check if each element forms a single-element sublist
-                sub_lists = [[element] for element in elements]
-
-                return sub_lists
-
-            def print_input_list(input_list):
-                if input_list is not None:
-                    print(input_list)
-                else:
-                    print("Invalid input format")
-
-            def print_input_as_list(*args):
-                input_value_str = desired_output_bp.get()
-                input_list_parsed = parse_input_string(input_value_str)
-                print_input_list(input_list_parsed)
-
-            # Use desired_output as the text variable for the entry widget
-            self.entry_desired_output_bp = customtkinter.CTkEntry(tab, placeholder_text="Desired output",
-                                                                  textvariable=desired_output_bp)
-            self.entry_desired_output_bp.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-            # Attach the trace callback to the text variable
-            desired_output_bp.trace("w", print_input_as_list)
 
         def entry_learning_rate_bp():
             def parse_entry(*args):
@@ -363,62 +284,98 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid learning rate format")
 
+            label_lr_bp = ctk.CTkLabel(tab, text="Learning rate")
+            label_lr_bp.grid(row=1, column=0, padx=(20, 0), pady=(20, 20))
+
             # Use learning_rate as the text variable for the entry widget
-            self.entry_learning_rate_bp = customtkinter.CTkEntry(tab, placeholder_text="Learning rate",
-                                                                 textvariable=learning_rate_bp)
-            self.entry_learning_rate_bp.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+            entry_lr_bp = ctk.CTkEntry(tab, textvariable=learning_rate_bp)
+            entry_lr_bp.grid(row=1, column=1, padx=(20, 0), pady=(20, 20))
 
             # Attach the trace callback to the text variable
             learning_rate_bp.trace("w", parse_entry)
 
-        entry_input_bp()
-        entry_desired_output_bp()
         entry_learning_rate_bp()
 
+        def data_options():
+            # Images for the labels
+            pil_xor = Image.open(
+                r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\backprop\data\xor_gate.jpeg")
+            resized_image_xor = pil_xor.resize((120, 120))
+            image_xor = ImageTk.PhotoImage(resized_image_xor)
+
+            pil_xnor = Image.open(
+                r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\backprop\data\xnor_gate.jpeg")
+            resized_image_xnor = pil_xnor.resize((120, 120))
+            image_xnor = ImageTk.PhotoImage(resized_image_xnor)
+
+            pil_nand = Image.open(
+                r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\backprop\data\nand_gate.jpeg")
+            resized_image_nand = pil_nand.resize((120, 120))
+            image_nand = ImageTk.PhotoImage(resized_image_nand)
+
+            # select the image that you want to decode, Variable to store the image of choice
+            self.dataset_choice_var = ctk.StringVar(value="XOR")  # Default is "First Image"
+
+            dataset_choice_label = ctk.CTkLabel(tab, text="Dataset:", font=("bold", 24))
+            dataset_choice_label.grid(row=2, column=0, padx=(20, 0), pady=(20, 20))
+
+            # Radio buttons for the selecting datasets
+            xor_radio = ctk.CTkRadioButton(tab, text="XOR", variable=self.dataset_choice_var, value="XOR")
+            xor_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5))
+            xor_label = ctk.CTkLabel(tab, image=image_xor, text="")
+            xor_label.grid(row=4, column=0, padx=(20, 0), pady=(5, 5))
+
+            xnor_radio = ctk.CTkRadioButton(tab, text="XNOR", variable=self.dataset_choice_var, value="XNOR")
+            xnor_radio.grid(row=3, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
+            xnor_label = ctk.CTkLabel(tab, image=image_xnor, text="")
+            xnor_label.grid(row=4, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
+
+            nand_radio = ctk.CTkRadioButton(tab, text="NAND", variable=self.dataset_choice_var, value="NAND")
+            nand_radio.grid(row=3, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
+            nand_label = ctk.CTkLabel(tab, image=image_nand, text="")
+            nand_label.grid(row=4, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
+
+            self.xor_data_array = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
+            self.xor_labels_array = np.array([[0], [1], [1], [0]])
+
+            self.xnor_data_array = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
+            self.xnor_labels_array = np.array([[1], [0], [0], [1]])
+
+            self.nand_data_array = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
+            self.nand_labels_array = np.array([[1], [1], [1], [0]])
+
+
+        data_options()
+
+        # ######## Function to obtain the chosen dataset ########
+        def get_selected_dataset():
+            selected_value = self.dataset_choice_var.get()
+            if selected_value == "XOR":
+                return self.xor_data_array, self.xor_labels_array
+            elif selected_value == "XNOR":
+                return self.xnor_data_array, self.xnor_labels_array
+            elif selected_value == "NAND":
+                return self.nand_data_array, self.nand_labels_array
+            else:
+                return None, None
+
+        # train the network
         def train_backprop():
-            input_data_str = input_bp.get()  # This is a string; you'll need to convert it to a numpy array
-            desired_output_str = desired_output_bp.get()  # Also a string to convert
-            learning_rate_str = learning_rate_bp.get()  # And this is a string to convert to float
-
-            # Convert the string representations to the appropriate types
-            try:
-                input_data = np.array(eval(input_data_str))  # Using eval can be risky; ensure the input is sanitized
-                desired_output = np.array(eval(desired_output_str))
-                learning_rate = float(learning_rate_str)
-
-                # Now, you can use the data to train your neural network using the Backpropagation object
-                backpropagation_model.train(input_data, desired_output, learning_rate)
-
-                print("Training phase")
-            except Exception as e:
-                print(f"An error occurred: {e}")
-
-        button_train_bp = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                  text="Train Network", text_color=("gray10", "#DCE4EE"),
-                                                  command=train_backprop)
-
-        button_train_bp.grid(row=4, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+            data, label = get_selected_dataset()
+            if data is not None and label is not None:
+                print("Train phase")
+                learning_rate = float(learning_rate_bp.get())
+                backpropagation_model.train(data, label, learning_rate)
+            else:
+                print("An error occurred")
 
         def test_backprop():
-            input_data_str = input_bp.get()  # This is a string; you'll need to convert it to a numpy array
-            desired_output_str = desired_output_bp.get()  # Also a string to convert
-
-            # Convert the string representations to the appropriate types
-            try:
-                input_data = np.array(eval(input_data_str))  # Using eval can be risky; ensure the input is sanitized
-                desired_output = np.array(eval(desired_output_str))
-
-                # Now, you can use the data to train your neural network using the Backpropagation object
-                backpropagation_model.test(input_data, desired_output)
-
+            data, label = get_selected_dataset()
+            if data is not None and label is not None:
                 print("Test phase")
-            except Exception as e:
-                print(f"An error occurred: {e}")
-
-        button_test_bp = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                 text="Test Network", text_color=("gray10", "#DCE4EE"),
-                                                 command=test_backprop)
-        button_test_bp.grid(row=4, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+                backpropagation_model.test(data, label)
+            else:
+                print("An error occurred")
 
         # Plot loss
         def plot_loss_from_test():
@@ -447,17 +404,28 @@ class App(customtkinter.CTk):
             self.canvas.draw()
             self.canvas.get_tk_widget().pack(fill='both', expand=True)
 
-        canvas_tab_2 = customtkinter.CTkCanvas(tab, width=400, height=300)
-        canvas_tab_2.grid(row=1, column=2, padx=(30, 0), pady=0)
+        canvas_tab_2 = ctk.CTkCanvas(tab, width=0, height=0)
+        canvas_tab_2.grid(row=5, column=4, padx=(30, 0), pady=0)
 
-        button_loss_bp = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+        button_train_bp = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                  text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                                  command=train_backprop)
+
+        button_train_bp.grid(row=5, column=0, padx=(20, 20), pady=(20, 20)) # , sticky="nsew"
+
+        button_test_bp = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                 text="Test Network", text_color=("gray10", "#DCE4EE"),
+                                                 command=test_backprop)
+        button_test_bp.grid(row=5, column=1, padx=(20, 20), pady=(20, 20))
+
+        button_loss_bp = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                                  text="Plot loss", text_color=("gray10", "#DCE4EE"),
                                                  command=plot_loss_from_test)
-        button_loss_bp.grid(row=4, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        button_loss_bp.grid(row=5, column=2, padx=(20, 20), pady=(20, 20))
 
     # ########### 3rd Tab ###########
     def setup_som_tab(self, tab):
-        label_tab_3 = customtkinter.CTkLabel(tab, text="Kohonen SOM Network", font=("bold", 24))
+        label_tab_3 = ctk.CTkLabel(tab, text="Kohonen SOM Network", font=("bold", 24))
         label_tab_3.grid(row=0, column=0, padx=20, pady=20)
 
         som_model = SOM()
@@ -481,10 +449,10 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid number of points per class format")
 
-            label_num_points_pclass = customtkinter.CTkLabel(tab, text="Num. of points per class:")
+            label_num_points_pclass = ctk.CTkLabel(tab, text="Num. of points per class:")
             label_num_points_pclass.grid(row=1, column=0, padx=20, pady=20)
 
-            entry_num_points_per_class_som = customtkinter.CTkEntry(tab, placeholder_text="Number of points per class",
+            entry_num_points_per_class_som = ctk.CTkEntry(tab, placeholder_text="Number of points per class",
                                                                     textvariable=num_point_per_class_som)
             entry_num_points_per_class_som.grid(row=1, column=1, padx=(20, 0), pady=(20, 20))
 
@@ -503,10 +471,10 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid Number of classes format")
 
-            label_num_classes_som = customtkinter.CTkLabel(tab, text="Num. of classes:")
+            label_num_classes_som = ctk.CTkLabel(tab, text="Num. of classes:")
             label_num_classes_som.grid(row=1, column=2, padx=20, pady=20)
 
-            entry_num_classes_som = customtkinter.CTkEntry(tab, textvariable=num_classes_som)
+            entry_num_classes_som = ctk.CTkEntry(tab, textvariable=num_classes_som)
             entry_num_classes_som.grid(row=1, column=3, padx=(20, 0), pady=(20, 20))
 
             # Attach the trace callback to the text variable
@@ -524,10 +492,10 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid number of neurons format")
 
-            label_number_of_neurons_som = customtkinter.CTkLabel(tab, text="Num of neurons:")
+            label_number_of_neurons_som = ctk.CTkLabel(tab, text="Num of neurons:")
             label_number_of_neurons_som.grid(row=2, column=0, padx=20, pady=20)
 
-            entry_number_of_neurons_som = customtkinter.CTkEntry(tab, textvariable=num_of_neurons_som)
+            entry_number_of_neurons_som = ctk.CTkEntry(tab, textvariable=num_of_neurons_som)
             entry_number_of_neurons_som.grid(row=2, column=1, padx=(20, 0), pady=(20, 20))
 
             # Attach the trace callback to the text variable
@@ -545,10 +513,10 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid input dimension format")
 
-            label_input_dimension = customtkinter.CTkLabel(tab, text="Input dimension:")
+            label_input_dimension = ctk.CTkLabel(tab, text="Input dimension:")
             label_input_dimension.grid(row=2, column=2, padx=20, pady=20)
 
-            entry_input_dimension_som = customtkinter.CTkEntry(tab, textvariable=input_dim_som)
+            entry_input_dimension_som = ctk.CTkEntry(tab, textvariable=input_dim_som)
             entry_input_dimension_som.grid(row=2, column=3, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
@@ -566,10 +534,10 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid learning rate format")
 
-            label_learning_rate_som = customtkinter.CTkLabel(tab, text="Learning rate")
+            label_learning_rate_som = ctk.CTkLabel(tab, text="Learning rate")
             label_learning_rate_som.grid(row=3, column=0, padx=20, pady=20)
 
-            entry_learning_rate_som = customtkinter.CTkEntry(tab, textvariable=lr_som)
+            entry_learning_rate_som = ctk.CTkEntry(tab, textvariable=lr_som)
             entry_learning_rate_som.grid(row=3, column=1, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
@@ -587,10 +555,10 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid epoch max format")
 
-            label_epoch_max_som = customtkinter.CTkLabel(tab, text="Epoch max:")
+            label_epoch_max_som = ctk.CTkLabel(tab, text="Epoch max:")
             label_epoch_max_som.grid(row=3, column=2, padx=20, pady=20)
 
-            entry_epoch_max_som = customtkinter.CTkEntry(tab, textvariable=epoch_max_som)
+            entry_epoch_max_som = ctk.CTkEntry(tab, textvariable=epoch_max_som)
             entry_epoch_max_som.grid(row=3, column=3, padx=(20, 0), pady=(20, 20), sticky="nsew")
 
             # Attach the trace callback to the text variable
@@ -648,10 +616,10 @@ class App(customtkinter.CTk):
         resized_image_rand_data = pil_image_random_data.resize((180, 180))
         image_rand_data = ImageTk.PhotoImage(resized_image_rand_data)
 
-        label_rand_data = customtkinter.CTkLabel(tab, text="Random Data", font=("bold", 18))
+        label_rand_data = ctk.CTkLabel(tab, text="Random Data", font=("bold", 18))
         label_rand_data.grid(row=2, column=4, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        image_label_rand_data = customtkinter.CTkLabel(tab, image=image_rand_data, text="")
+        image_label_rand_data = ctk.CTkLabel(tab, image=image_rand_data, text="")
         image_label_rand_data.grid(row=3, column=4, padx=(20, 0), pady=(5, 5), sticky="w")
 
         def train_som():
@@ -669,7 +637,7 @@ class App(customtkinter.CTk):
 
                 print("Training phase")
 
-                # Now, you can use the data to train your neural network usingas the SOM model
+                # Now, you can use the data to train your neural network using the SOM model
                 self.trained_weights = som_model.train(num_of_neurons, input_dim, self.data, learning_rate, epoch_max)
                 print("Training completed.")
 
@@ -690,18 +658,18 @@ class App(customtkinter.CTk):
 
             plt.show()
 
-        button_generate_data_som = customtkinter.CTkButton(tab, fg_color="#219ebc", border_width=2,
+        button_generate_data_som = ctk.CTkButton(tab, fg_color="#219ebc", border_width=2,
                                                            text="Generate data", text_color="white",
                                                            command=generate_data)
         # command=generate_data_som()) num_points_p_class=, num_classes=
         button_generate_data_som.grid(row=7, column=0, padx=(20, 20), pady=(20, 20))
 
-        button_train_network = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+        button_train_network = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                                        text="Train Network", text_color=("gray10", "#DCE4EE"),
                                                        command=train_som)
         button_train_network.grid(row=7, column=1, padx=(20, 20), pady=(20, 20))
 
-        button_plot_results = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
+        button_plot_results = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                                       text="Plot results", text_color=("gray10", "#DCE4EE"),
                                                       command=plot_som)
         button_plot_results.grid(row=7, column=2, padx=(20, 20), pady=(20, 20))
@@ -713,7 +681,7 @@ class App(customtkinter.CTk):
         momentum_ac = StringVar()
         epoch_max_ac = StringVar()
 
-        label_tab = customtkinter.CTkLabel(tab, text="AutoEncoder Network", font=("bold",  24))
+        label_tab = ctk.CTkLabel(tab, text="AutoEncoder Network", font=("bold", 24))
         label_tab.grid(row=0, column=0, padx=20, pady=20)
 
         def entry_learning_rate_ac():
@@ -728,10 +696,10 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid Learning rate format")
 
-            label_learning_rate = customtkinter.CTkLabel(tab, text="Learning rate")
+            label_learning_rate = ctk.CTkLabel(tab, text="Learning rate")
             label_learning_rate.grid(row=1, column=0, padx=(20, 0), pady=(20, 20))
 
-            entry_learning_rate = customtkinter.CTkEntry(tab, textvariable=learning_rate_ac)
+            entry_learning_rate = ctk.CTkEntry(tab, textvariable=learning_rate_ac)
             entry_learning_rate.grid(row=1, column=1, padx=(20, 0), pady=(20, 20))  # , sticky="nsew"
             # Attach the trace callback to the text variable
             learning_rate_ac.trace("w", parse_entry)
@@ -748,10 +716,10 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid Momentum rate format")
 
-            label_momentum_rate = customtkinter.CTkLabel(tab, text="Momentum rate")
+            label_momentum_rate = ctk.CTkLabel(tab, text="Momentum rate")
             label_momentum_rate.grid(row=1, column=2, padx=(20, 0), pady=(20, 20))  # , sticky="nsew"
 
-            entry_momentum_rate = customtkinter.CTkEntry(tab, textvariable=momentum_ac)
+            entry_momentum_rate = ctk.CTkEntry(tab, textvariable=momentum_ac)
             entry_momentum_rate.grid(row=1, column=3, padx=(20, 0), pady=(20, 20))
 
             # Attach the trace callback to the text variable
@@ -768,10 +736,10 @@ class App(customtkinter.CTk):
                 except ValueError:
                     print("Invalid Epoch Max format")
 
-            label_epoch_max = customtkinter.CTkLabel(tab, text="Epoch max")
+            label_epoch_max = ctk.CTkLabel(tab, text="Epoch max")
             label_epoch_max.grid(row=2, column=0, padx=(20, 0), pady=(20, 20))
 
-            entry_epoch_max = customtkinter.CTkEntry(tab, textvariable=epoch_max_ac)
+            entry_epoch_max = ctk.CTkEntry(tab, textvariable=epoch_max_ac)
             entry_epoch_max.grid(row=2, column=1, padx=(20, 0), pady=(20, 20))
 
             # Attach the trace callback to the text variable
@@ -798,28 +766,28 @@ class App(customtkinter.CTk):
         image3 = ImageTk.PhotoImage(resized_image3)
 
         # select the image that you want to decode, Variable to store the image of choice
-        image_choice_var = customtkinter.StringVar(value="First Image")  # Default is "First Image"
+        image_choice_var = ctk.StringVar(value="First Image")  # Default is "First Image"
 
         # Radio buttons for selecting the Images
-        first_image_radio = customtkinter.CTkRadioButton(tab, text="First Image",
+        first_image_radio = ctk.CTkRadioButton(tab, text="First Image",
                                                          variable=image_choice_var, value="First Image")
         first_image_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        first_image_label = customtkinter.CTkLabel(tab, image=image1, text="")
+        first_image_label = ctk.CTkLabel(tab, image=image1, text="")
         first_image_label.grid(row=4, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        second_image_radio = customtkinter.CTkRadioButton(tab, text="Second Image",
+        second_image_radio = ctk.CTkRadioButton(tab, text="Second Image",
                                                           variable=image_choice_var, value="Second Image")
         second_image_radio.grid(row=3, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        second_image_label = customtkinter.CTkLabel(tab, image=image2, text="")
+        second_image_label = ctk.CTkLabel(tab, image=image2, text="")
         second_image_label.grid(row=4, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        third_image_radio = customtkinter.CTkRadioButton(tab, text="Third Image",
+        third_image_radio = ctk.CTkRadioButton(tab, text="Third Image",
                                                          variable=image_choice_var, value="Third Image")
         third_image_radio.grid(row=3, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
-        third_image_label = customtkinter.CTkLabel(tab, image=image3, text="")
+        third_image_label = ctk.CTkLabel(tab, image=image3, text="")
         third_image_label.grid(row=4, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # ######## OBTAIN THE IMAGE PATHS ########
@@ -833,11 +801,11 @@ class App(customtkinter.CTk):
         img_3 = Image.open(img_3_path).convert("RGB")
 
         # ######## NORMALIZE THE IMAGES ########
-        img_1_array = np.array(img_1) # / 255.0 * 2 - 1
-        img_2_array = np.array(img_2) # / 255.0 * 2 - 1
-        img_3_array = np.array(img_3) # / 255.0 * 2 - 1
+        img_1_array = np.array(img_1)  # / 255.0 * 2 - 1
+        img_2_array = np.array(img_2)  # / 255.0 * 2 - 1
+        img_3_array = np.array(img_3)  # / 255.0 * 2 - 1
 
-        # ######## Function to obtain the choosen image ########
+        # ######## Function to obtain the chosen image ########
         def get_selected_image_data():
             selected_value = image_choice_var.get()
             if selected_value == "First Image":
@@ -860,7 +828,9 @@ class App(customtkinter.CTk):
                 momentum_ac_value = float(momentum_ac.get())
                 epoch_max_ac_value = int(epoch_max_ac.get())
 
-                self.loss, latent_space, self.decoded_inputs = autoencoder_model.train(data, learning_rate_ac_value, momentum_ac_value, epoch_max_ac_value)
+                self.loss, latent_space, self.decoded_inputs = autoencoder_model.train(data, learning_rate_ac_value,
+                                                                                       momentum_ac_value,
+                                                                                       epoch_max_ac_value)
             else:
                 print("The model need's the hyperparameters")
 
@@ -868,7 +838,8 @@ class App(customtkinter.CTk):
         def reconstruct_selected_image():
             data = get_selected_image_data()
             if data is not None:
-                reconstructed_image = self.decoded_inputs.reshape(16, 16, 3)  # This should be a NumPy array. If it's not, you'll have to adjust this part.
+                reconstructed_image = self.decoded_inputs.reshape(16, 16,
+                                                                  3)  # This should be a NumPy array. If it's not, you'll have to adjust this part.
                 if isinstance(reconstructed_image, Image.Image):
                     # If decoded_inputs is still a PIL Image, convert it to a NumPy array
                     reconstructed_image = Image.fromarray(np.uint8(self.decoded_inputs))
@@ -890,20 +861,19 @@ class App(customtkinter.CTk):
 
             plt.show()
 
-
-        button_train_ac = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                text="Train Network", text_color=("gray10", "#DCE4EE"),
-                                                command=train_ac)
+        button_train_ac = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                  text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                                  command=train_ac)
         button_train_ac.grid(row=6, column=0, padx=(20, 20), pady=(20, 20))
 
-        button_reconstruction_ac = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                            text="Reconstruct image",
-                                                            text_color=("gray10", "#DCE4EE"),
-                                                            anchor="w", command=reconstruct_selected_image)
+        button_reconstruction_ac = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                           text="Reconstruct image",
+                                                           text_color=("gray10", "#DCE4EE"),
+                                                           anchor="w", command=reconstruct_selected_image)
         button_reconstruction_ac.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
-        button_plot_loss_ac = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                text="Plot loss", text_color=("gray10", "#DCE4EE"),
+        button_plot_loss_ac = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                      text="Plot loss", text_color=("gray10", "#DCE4EE"),
                                                       command=plot_loss_from_training)
         button_plot_loss_ac.grid(row=6, column=2, padx=(20, 20), pady=(20, 20))
 
@@ -913,7 +883,7 @@ class App(customtkinter.CTk):
 
         # Reshape and convert the original image to a NumPy array
         original_image_array = np.array(original_image[0])
-        original_image_array = original_image_array.astype(np.uint8) #+ 1) / 2 * 255
+        original_image_array = original_image_array.astype(np.uint8)  # + 1) / 2 * 255
 
         # Plot the original image
         plt.subplot(1, 2, 1)
@@ -932,7 +902,7 @@ class App(customtkinter.CTk):
 
     # ########### 5th Tab ###########
     def setup_lvq(self, tab):
-        label_lvq = customtkinter.CTkLabel(tab, text="LVQ Network", font=("bold", 24))
+        label_lvq = ctk.CTkLabel(tab, text="LVQ Network", font=("bold", 24))
         label_lvq.grid(row=0, column=0, padx=20, pady=20)
 
         input_lvq = StringVar()
@@ -940,209 +910,8 @@ class App(customtkinter.CTk):
         learning_rate_lvq = StringVar()
         epoch_max_lvq = StringVar()
 
-        def entry_input_lvq():
-            def parse_input_string(input_string):
-                # Remove unnecessary characters and split the string into individual elements
-                elements = input_string.replace("[", "").replace("]", "").split(",")
-
-                # Convert elements to floats
-                try:
-                    elements = [float(element.strip()) for element in elements]
-                except ValueError:
-                    return None
-
-                # Check if the number of elements is divisible by 2 (assuming each data point has two coordinates)
-                if len(elements) % 2 != 0:
-                    return None
-
-                # Create sublists of coordinates
-                sub_lists = [elements[i:i + 2] for i in range(0, len(elements), 2)]
-
-                return sub_lists
-
-            def print_input_list(input_list):
-                if input_list is not None:
-                    print(input_list)
-                    # You can perform further processing or pass this data to your LVQ algorithm
-                else:
-                    print("Invalid input format")
-
-            def print_input_as_list(*args):
-                input_value_str = input_lvq.get()
-                input_list_parsed = parse_input_string(input_value_str)
-                print_input_list(input_list_parsed)
-
-            label_input = customtkinter.CTkLabel(tab, text="Input")
-            label_input.grid(row=1, column=0, padx=(20, 0), pady=(20, 20))
-
-            entry_input = customtkinter.CTkEntry(tab, textvariable=input_lvq)
-            entry_input.grid(row=1, column=1, padx=(20, 0), pady=(20, 20))
-
-            input_lvq.trace("w", print_input_as_list)
-
-        def entry_labels_lvq():
-            def parse_input_string(input_string):
-                # Remove brackets and split the string into individual elements
-                elements = input_string.replace("[", "").replace("]", "").split(",")
-
-                # Convert elements to integers
-                try:
-                    elements = [int(element) for element in elements]
-                except ValueError:
-                    return None
-
-                # Check if each element forms a single-element sublist
-                sub_lists = [[element] for element in elements]
-
-                return sub_lists
-
-            def print_input_list(input_list):
-                if input_list is not None:
-                    print(input_list)
-                else:
-                    print("Invalid input format")
-
-            def print_input_as_list(*args):
-                input_value_str = labels_lvq.get()
-                input_list_parsed = parse_input_string(input_value_str)
-                print_input_list(input_list_parsed)
-
-            label_labels_lvq = customtkinter.CTkLabel(tab, text="Desired output")
-            label_labels_lvq.grid(row=1, column=2, padx=(20, 0), pady=(20,0))
-
-            # Use desired_output as the text variable for the entry widget
-            entry_desired_output_bp = customtkinter.CTkEntry(tab, textvariable=labels_lvq)
-            entry_desired_output_bp.grid(row=1, column=3, padx=(20, 0), pady=(20, 20))
-
-            # Attach the trace callback to the text variable
-            labels_lvq.trace("w", print_input_as_list)
-
-        def entry_learning_rate_lvq():
-            def parse_entry(*args):
-                try:
-                    # Get the input value from the entry widget
-                    input_value_str = learning_rate_lvq.get()
-                    # Convert the input value to a float
-                    learning_rate_value = float(input_value_str)
-                    # Use the learning_rate_value here
-                    print("Learning rate:", learning_rate_value)
-                except ValueError:
-                    print("Invalid learning rate format")
-
-            label_learning_rate_lvq = customtkinter.CTkLabel(tab, text="Learning rate", font=("bold", 14))
-            label_learning_rate_lvq.grid(row=2, column=0, padx=20, pady=20)
-
-            # Use learning_rate as the text variable for the entry widget
-            entry_learning_rate_lvq = customtkinter.CTkEntry(tab, textvariable=learning_rate_lvq)
-            entry_learning_rate_lvq.grid(row=2, column=1, padx=(20, 0), pady=(20, 20))
-
-            # Attach the trace callback to the text variable
-            learning_rate_lvq.trace("w", parse_entry)
-
-        def entry_epoch_max_lvq():
-            def parse_entry(*args):
-                try:
-                    # Get the input value from the entry widget
-                    input_value_str = int(epoch_max_lvq.get())
-                    # Convert the input value to an integer
-                    epoch_max_hop_value = int(input_value_str)
-                    # Use the learning_rate_value here
-                    print("Epoch max:", epoch_max_hop_value)
-                except ValueError:
-                    print("Invalid Epoch max format")
-
-            label_epoch_max_lvq = customtkinter.CTkLabel(tab, text="Epoch max:", font=("bold", 14))
-            label_epoch_max_lvq.grid(row=2, column=2, padx=20, pady=20)
-
-            # Use learning_rate as the text variable for the entry widget
-            entry_epoch_max_lvq = customtkinter.CTkEntry(tab, textvariable=epoch_max_lvq)
-            entry_epoch_max_lvq.grid(row=2, column=3, padx=(20), pady=(20))
-
-            # Attach the trace callback to the text variable
-            epoch_max_lvq.trace("w", parse_entry)
-
-        entry_input_lvq()
-        entry_labels_lvq()
-        entry_learning_rate_lvq()
-        entry_epoch_max_lvq()
-
-        lvq_model = LvqNetwork()
-
-        def train_lvq():
-            input_data_str = input_lvq.get()
-            desired_output_str = labels_lvq.get()
-            learning_rate_str = learning_rate_lvq.get()
-            epoch_max_lvq_str = epoch_max_lvq.get()
-
-            try:
-                input_data = np.array(eval(input_data_str))
-                desired_output = np.array(eval(desired_output_str))
-                learning_rate = float(learning_rate_str)
-                epoch_max = int(epoch_max_lvq_str)
-
-                trained_vectors = lvq_model.train(input_data, desired_output, learning_rate, epoch_max)
-
-                print("Training completed")
-
-                # Plot the trained vectors and data
-                plot(input_data, trained_vectors, desired_output, "Trained Vectors and Data", test=True)
-            except Exception as e:
-                print(f"An error occurred: {e}")
-
-        button_train_ac = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                  text="Train Network", text_color=("gray10", "#DCE4EE"),
-                                                  command=train_lvq)
-        button_train_ac.grid(row=3, column=0, padx=(20, 20), pady=(20, 20))
-
-        '''
-        button_test_lvq = customtkinter.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                           text="Reconstruct image",
-                                                           text_color=("gray10", "#DCE4EE"),
-                                                           command=test_lvq)
-        button_test_lvq.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
-
-        '''
-
-    def plot(data, vectors, labels, title):
-        with plt.style.context('seaborn-darkgrid'):
-            plt.figure(figsize=(8, 6))
-            plt.scatter(data[:, 0], data[:, 1], c=labels, cmap='viridis', marker='o', label='Data', alpha=0.6)
-            plt.scatter(vectors[:, 0], vectors[:, 1], c='red', marker='x', s=100, label='Vectors')
-
-            for i, label in enumerate(labels):
-                plt.text(data[i, 0], data[i, 1], str(label), color='black', fontsize=10, ha='center', va='center')
-
-            plt.xlabel('Feature 1')
-            plt.ylabel('Feature 2')
-            plt.title(title)
-            plt.legend()
-            plt.grid(True)
-            plt.show()
-
     def exit(self):
         self.destroy()
-
-
-'''     
-
-
-        self.entry2_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Labels")
-        self.entry2_tab_5.grid(row=2, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.entry3_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Learning rate")
-        self.entry3_tab_5.grid(row=3, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.entry4_tab_5 = customtkinter.CTkEntry(tab_5, placeholder_text="Test input")
-        self.entry4_tab_5.grid(row=4, column=0, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-
-        self.button1_tab_5 = customtkinter.CTkButton(tab_5, fg_color="transparent", border_width=2,
-                                                     text="Train Network", text_color=("gray10", "#DCE4EE"))
-        self.button1_tab_5.grid(row=6, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
-
-        self.button2_tab_5 = customtkinter.CTkButton(tab_5, fg_color="transparent", border_width=2,
-                                                     text="Test Network", text_color=("gray10", "#DCE4EE"))
-        self.button2_tab_5.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
-        '''
 
 if __name__ == "__main__":
     app = App()
