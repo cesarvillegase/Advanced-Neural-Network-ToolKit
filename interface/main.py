@@ -7,12 +7,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 from customtkinter import CTkRadioButton
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from sklearn.metrics import accuracy_score
 
 from neural_networks.hopfield import HopfieldNetwork
 from neural_networks.backprop import Backpropagation
 from neural_networks.som_kohonen import SOM
 from neural_networks.autoencoder import AutoEncoder
-from neural_networks.lvq import LvqNetwork
+from neural_networks.lvq import LvqNetwork, plot_lvq
 
 ctk.set_appearance_mode("system")
 ctk.set_default_color_theme("blue")
@@ -639,7 +640,8 @@ class App(ctk.CTk):
                 # Plot training data
                 plt.scatter(self.norm_data[:, 0], self.norm_data[:, 1], c='r', marker='x', label='Training Data')
                 # Plot trained weights
-                plt.scatter(self.pretrained_weights[:, 0], self.pretrained_weights[:, 1], c='b', marker='o', label='Neurons')
+                plt.scatter(self.pretrained_weights[:, 0], self.pretrained_weights[:, 1], c='b', marker='o',
+                            label='Neurons')
                 plt.title("Trained weights")
                 plt.legend()
                 plt.show()
@@ -890,10 +892,165 @@ class App(ctk.CTk):
         label_lvq = ctk.CTkLabel(tab, text="LVQ Network", font=("bold", 24))
         label_lvq.grid(row=0, column=0, padx=20, pady=20)
 
-        input_lvq = StringVar()
-        labels_lvq = StringVar()
         learning_rate_lvq = StringVar()
         epoch_max_lvq = StringVar()
+
+        def entry_learning_rate_lvq():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = learning_rate_lvq.get()
+                    # Convert the input value to a float
+                    learning_rate_value = float(input_value_str)
+                    # Use the learning_rate_value here
+                    print("Learning rate:", learning_rate_value)
+                except ValueError:
+                    print("Invalid learning rate format")
+
+            label_learning_rate_lvq = ctk.CTkLabel(tab, text="Learning rate", font=("bold", 14))
+            label_learning_rate_lvq.grid(row=1, column=0, padx=20, pady=20)
+
+            # Use learning_rate as the text variable for the entry widget
+            entry_learning_rate_lvq = ctk.CTkEntry(tab, textvariable=learning_rate_lvq)
+            entry_learning_rate_lvq.grid(row=1, column=1, padx=(20, 0), pady=(20, 20))
+
+            # Attach the trace callback to the text variable
+            learning_rate_lvq.trace("w", parse_entry)
+
+        def entry_epoch_max_lvq():
+            def parse_entry(*args):
+                try:
+                    # Get the input value from the entry widget
+                    input_value_str = int(epoch_max_lvq.get())
+                    # Convert the input value to an integer
+                    epoch_max_hop_value = int(input_value_str)
+                    # Use the learning_rate_value here
+                    print("Epoch max:", epoch_max_hop_value)
+                except ValueError:
+                    print("Invalid Epoch max format")
+
+            label_epoch_max_lvq = ctk.CTkLabel(tab, text="Epoch max:", font=("bold", 14))
+            label_epoch_max_lvq.grid(row=1, column=2, padx=20, pady=20)
+
+            # Use learning_rate as the text variable for the entry widget
+            entry_epoch_max_lvq = ctk.CTkEntry(tab, textvariable=epoch_max_lvq)
+            entry_epoch_max_lvq.grid(row=1, column=3, padx=(20), pady=(20))
+
+            # Attach the trace callback to the text variable
+            epoch_max_lvq.trace("w", parse_entry)
+
+        entry_learning_rate_lvq()
+        entry_epoch_max_lvq()
+
+        def data_options():
+            # Images for the labels
+            pil_example_data = Image.open(
+                r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\lvq\plot\example_data.jpeg")
+            resized_example_data = pil_example_data.resize((280, 280))
+            image_example_data = ImageTk.PhotoImage(resized_example_data)
+
+            # select the image that you want to decode, Variable to store the image of choice
+            self.dataset_choice_var = ctk.StringVar(value="Example Data")  # Default is "First Image"
+
+            dataset_choice_label = ctk.CTkLabel(tab, text="Dataset:", font=("bold", 24))
+            dataset_choice_label.grid(row=2, column=0, padx=(20, 0), pady=(20, 20))
+
+            # Radio buttons for the selecting datasets
+            xor_radio = ctk.CTkRadioButton(tab, text="Example Data", variable=self.dataset_choice_var, value="Example Data")
+            xor_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5))
+            xor_label = ctk.CTkLabel(tab, image=image_example_data, text="")
+            xor_label.grid(row=4, column=0, padx=(20, 0), pady=(5, 5))
+
+            self.example_X_train_array = np.array([[5.2, 6.7], [2.0, 3.0], [4.0, 5.0], [7.9, 6.1], [1.0, 2.0], [7.1, 8.9],
+                                                      [2.0, 1.0], [5.1, 7.2], [3.0, 3.0], [7.9, 5.2], [4.0, 5.0], [2.9, 3.2],
+                                                      [4.1, 5.7], [1.2, 2.8], [7.9, 6.2], [5.2, 6.1], [9.2, 8.1], [2.2, 1.1],
+                                                      [3.98, 2.0], [4.8, 5.2], [9.9, 8.2], [7.1, 5.7], [5.2, 7.9], [7.2, 8.1]])
+
+            self.example_y_train_array = np.array([0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1,
+                                                        1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0])
+
+            self.example_X_test_array = np.array([[5.0, 8.0], [9.0, 8.0], [2.0, 9.0], [4.0, 8.0], [4.0, 7.0],
+                                                     [2.0, 6.0], [3.0, 1.0], [1.0, 4.0], [1.0, 1.0], [4.0, 3.0],
+                                                     [5.9, 6.2], [2.6, 3.2], [4.8, 5.1], [1.7, 2.2], [2.9, 1.5],
+                                                     [4.5, 5.2], [9.0, 8.0], [7.2, 5.9], [5.1, 7.8], [7.2, 8.9]])
+
+            self.example_y_test_array = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+                                               0, 1, 1, 1, 1, 1, 0, 0, 0, 0])
+
+        data_options()
+
+        # ######## Function to obtain the chosen dataset ########
+        def get_selected_dataset():
+            selected_value = self.dataset_choice_var.get()
+            if selected_value == "Example Data":
+                return self.example_X_train_array, self.example_y_train_array, self.example_X_test_array, self.example_y_test_array
+            else:
+                return None, None, None, None
+
+        model_lvq = LvqNetwork()
+
+        def plot_example_data():
+            X_train, y_train, X_test, y_test = get_selected_dataset()
+
+            norm_X_train_lvq = model_lvq.norm_data(X_train)
+            norm_vectors = model_lvq.init_vectors(norm_X_train_lvq, y_train)
+            plot_lvq(norm_X_train_lvq, norm_vectors, y_train, title='Before the training')
+
+        def train_lvq():
+            X_train, y_train, X_test, y_test = get_selected_dataset()
+            if X_train is not None and y_train is not None:
+                print("Train phase")
+                learning_rate= float(learning_rate_lvq.get())
+                epoch_max = int(epoch_max_lvq.get())
+
+                norm_X_train_lvq = model_lvq.norm_data(X_train)
+                self.trained_vectors_lvq = model_lvq.train(norm_X_train_lvq, y_train, learning_rate, epoch_max)
+                plot_lvq(norm_X_train_lvq, self.trained_vectors_lvq, y_train, title='After the training')
+            else:
+                print("An error occurred")
+
+        # Test the network
+        def test_lvq():
+            X_train, y_train, X_test, y_test = get_selected_dataset()
+            if X_test is not None and y_test is not None:
+                print("Test phase")
+
+                norm_X_test_lvq = model_lvq.norm_data(X_test)
+                self.y_pred_lvq = model_lvq.test(norm_X_test_lvq) # Predicted labels
+                plot_lvq(norm_X_test_lvq, self.trained_vectors_lvq, self.y_pred_lvq, title='Test LVQ', test=True)
+            else:
+                print("An error occurred")
+
+        def accuracy_lvq():
+            X_train, y_train, X_test, y_test = get_selected_dataset()
+
+            accuracy = accuracy_score(y_test, self.y_pred_lvq)
+            print(f"> Accuracy of the model: {accuracy:.2f}")
+            print("True labels:", y_test)
+            print("Predicted labels:", self.y_pred_lvq)
+
+        button_example_data = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
+                                            text="Example Data", text_color=("gray10", "#DCE4EE"),
+                                            command=plot_example_data)
+
+        button_example_data.grid(row=4, column=1, padx=(20, 20), pady=(20, 20))  # , sticky="nsew"
+
+        button_train_lvq = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
+                                        text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                        command=train_lvq)
+
+        button_train_lvq.grid(row=4, column=2, padx=(20, 20), pady=(20, 20))  # , sticky="nsew"
+
+        button_test_lvq = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
+                                       text="Test Network", text_color=("gray10", "#DCE4EE"),
+                                       command=test_lvq)
+        button_test_lvq.grid(row=4, column=3, padx=(20, 20), pady=(20, 20))
+
+        button_accuracy_lvq = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
+                                       text="Accuracy", text_color=("gray10", "#DCE4EE"),
+                                       command=accuracy_lvq)
+        button_accuracy_lvq.grid(row=4, column=4, padx=(20, 20), pady=(20, 20))
+
 
     def exit(self):
         self.destroy()

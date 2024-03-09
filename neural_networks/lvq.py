@@ -59,7 +59,7 @@ class LvqNetwork:
         return np.array(winners)
 
 
-def plot(normalized_data, normalized_vectors, y, title, test=False):
+def plot_lvq(normalized_data, normalized_vectors, y, title, test=False):
     with plt.style.context('seaborn-v0_8-darkgrid'):
         plt.scatter(normalized_data[:, 0], normalized_data[:, 1], c=y, cmap='summer', marker='o', s=100, label='data')
         plt.scatter(normalized_vectors[:, 0], normalized_vectors[:, 1], c='red', marker='x', s=200, label='vectors')
@@ -74,8 +74,6 @@ def plot(normalized_data, normalized_vectors, y, title, test=False):
         plt.show()
 
 
-
-'''
 
 # TESTING    
 
@@ -100,10 +98,11 @@ X_test_lvq = np.array([[5.0, 8.0], [9.0, 8.0], [2.0, 9.0], [4.0, 8.0], [4.0, 7.0
 y_test_lvq = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
                        0, 1, 1, 1, 1, 1, 0, 0, 0, 0])
 
-model = LVQ()
+'''
+model = LvqNetwork()
 norm_X_train_lvq = model.norm_data(X_train_lvq)
 norm_vectors = model.init_vectors(norm_X_train_lvq, y_train_lvq)
-plot(X_train_lvq, norm_vectors, y_train_lvq, title='Before the training')
+plot_lvq(X_train_lvq, norm_vectors, y_train_lvq, title='Before the training')
 
 trained_vectors_lvq = model.train(norm_X_train_lvq, y_train_lvq, delta=0.1, epoch_max=500)
 plot(norm_X_train_lvq, trained_vectors_lvq, y_train_lvq, title='After the training')
@@ -116,6 +115,4 @@ accuracy = accuracy_score(y_test_lvq, labels_predicted_lvq)
 print(f"> Accuracy of the model: {accuracy:.2f}")
 print("True labels:", y_test_lvq)
 print("Predicted labels:", labels_predicted_lvq)
-
-
 '''
