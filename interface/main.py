@@ -9,11 +9,11 @@ from customtkinter import CTkRadioButton
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from sklearn.metrics import accuracy_score
 
-from neural_networks.hopfield import HopfieldNetwork
+from neural_networks.hopfield import HopfieldNetwork, plot_images_hop
 from neural_networks.backprop import Backpropagation
 from neural_networks.som_kohonen import SOM
-from neural_networks.autoencoder import AutoEncoder
-from neural_networks.lvq import LvqNetwork, plot_lvq
+from neural_networks.autoencoder import AutoEncoder, plot_images_ac, plot_loss_ac
+from neural_networks.lvq import LvqNetwork, plot_lvq, accuracy_lvq
 
 ctk.set_appearance_mode("system")
 ctk.set_default_color_theme("blue")
@@ -125,7 +125,7 @@ class App(ctk.CTk):
 
             # Use learning_rate as the text variable for the entry widget
             entry_epoch_max_hop = ctk.CTkEntry(tab, textvariable=epoch_max_hop)
-            entry_epoch_max_hop.grid(row=1, column=1, padx=(20), pady=(20))
+            entry_epoch_max_hop.grid(row=1, column=1, padx=20, pady=20)
 
             # Attach the trace callback to the text variable
             epoch_max_hop.trace("w", parse_entry)
@@ -233,7 +233,7 @@ class App(ctk.CTk):
                 original_img = [((data + 1) / 2 * 255).astype(np.uint8)]
                 noisy_img = [((noisy_data + 1) / 2 * 255).astype(np.uint8)]
                 rec_img = [((reconstructed_image + 1) / 2 * 255).astype(np.uint8)]
-                self.plot_images_hop(original_img, noisy_img, rec_img)
+                plot_images_hop(original_img, noisy_img, rec_img)
                 print("Reconstruction phase completed")
 
         # Create buttons for training and reconstruction
@@ -248,20 +248,6 @@ class App(ctk.CTk):
                                                   text_color=("gray10", "#DCE4EE"),
                                                   anchor="w", command=reconstruct_selected_image)
         button_reconstruction_hop.grid(row=6, column=1, padx=(20, 20), pady=(20, 20))
-
-    def plot_images_hop(self, original_img, noisy_img, reconstructed_img):
-        """Plot the original, noisy, and reconstructed images."""
-        plt.figure(figsize=(12, 4))
-        imgs = [original_img[0], noisy_img[0],
-                reconstructed_img[0]]  # Access the first element since each is wrapped in a list
-        titles = ['Original Image', 'Noisy Image', 'Reconstructed Image']
-        for i in range(3):
-            plt.subplot(1, 3, i + 1)
-            plt.imshow(imgs[i].astype(np.uint8))
-            plt.title(titles[i])
-            plt.axis('off')
-        plt.tight_layout()
-        plt.show()
 
     # ########### 2nd Tab ###########
     def setup_backprop_tab(self, tab):
@@ -833,20 +819,12 @@ class App(ctk.CTk):
 
                 original_img = [(data)]
 
-                self.plot_images(original_img, reconstructed_image)
+                plot_images_ac(original_img, reconstructed_image)
 
         def plot_loss_from_training():
             # Plot the loss directly using the loss values obtained during the test
             loss_values = self.loss
-
-            plt.figure(figsize=(8, 6))  # Adjust the figure size as per your preference
-            plt.plot(range(1, len(loss_values) + 1), loss_values, color='blue', label='Mean Square Error')
-            plt.title("Training loss")
-            plt.xlabel('Epochs')
-            plt.ylabel('Loss')
-            plt.legend()
-
-            plt.show()
+            plot_loss_ac(loss_values)
 
         button_train_ac = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                         text="Train Network", text_color=("gray10", "#DCE4EE"),
@@ -863,29 +841,6 @@ class App(ctk.CTk):
                                             text="Plot loss", text_color=("gray10", "#DCE4EE"),
                                             command=plot_loss_from_training)
         button_plot_loss_ac.grid(row=6, column=2, padx=(20, 20), pady=(20, 20))
-
-    def plot_images(self, original_image, reconstructed_img):
-        """Plot the original, noisy, and reconstructed images."""
-        plt.figure(figsize=(8, 4))
-
-        # Reshape and convert the original image to a NumPy array
-        original_image_array = np.array(original_image[0])
-        original_image_array = original_image_array.astype(np.uint8)  # + 1) / 2 * 255
-
-        # Plot the original image
-        plt.subplot(1, 2, 1)
-        plt.imshow(original_image_array)
-        plt.title('Original Image')
-        plt.axis('off')  # Turn off axes
-
-        # Plot the reconstructed image
-        plt.subplot(1, 2, 2)
-        plt.imshow(reconstructed_img)
-        plt.title('Reconstructed Image')
-        plt.axis('off')
-
-        plt.tight_layout()
-        plt.show()
 
     # ########### 5th Tab ###########
     def setup_lvq(self, tab):
@@ -1021,36 +976,36 @@ class App(ctk.CTk):
             else:
                 print("An error occurred")
 
-        def accuracy_lvq():
+        label_accuracy = ctk.CTkLabel(tab, text="", wraplength=400, font=("bold", 14))
+        label_accuracy.grid(row=4, column=2, padx=20, pady=20, sticky="ew")
+
+        def print_accuracy():
             X_train, y_train, X_test, y_test = get_selected_dataset()
 
-            accuracy = accuracy_score(y_test, self.y_pred_lvq)
-            print(f"> Accuracy of the model: {accuracy:.2f}")
-            print("True labels:", y_test)
-            print("Predicted labels:", self.y_pred_lvq)
+            results = accuracy_lvq(y_test, self.y_pred_lvq)
+            label_accuracy.configure(text=results)
 
         button_example_data = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                             text="Example Data", text_color=("gray10", "#DCE4EE"),
                                             command=plot_example_data)
 
-        button_example_data.grid(row=4, column=1, padx=(20, 20), pady=(20, 20))  # , sticky="nsew"
+        button_example_data.grid(row=3, column=1, padx=(20, 20), pady=(20, 20))  # , sticky="nsew"
 
         button_train_lvq = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                         text="Train Network", text_color=("gray10", "#DCE4EE"),
                                         command=train_lvq)
 
-        button_train_lvq.grid(row=4, column=2, padx=(20, 20), pady=(20, 20))  # , sticky="nsew"
+        button_train_lvq.grid(row=3, column=2, padx=(20, 20), pady=(20, 20))  # , sticky="nsew"
 
         button_test_lvq = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                        text="Test Network", text_color=("gray10", "#DCE4EE"),
                                        command=test_lvq)
-        button_test_lvq.grid(row=4, column=3, padx=(20, 20), pady=(20, 20))
+        button_test_lvq.grid(row=3, column=3, padx=(20, 20), pady=(20, 20))
 
         button_accuracy_lvq = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                        text="Accuracy", text_color=("gray10", "#DCE4EE"),
-                                       command=accuracy_lvq)
-        button_accuracy_lvq.grid(row=4, column=4, padx=(20, 20), pady=(20, 20))
-
+                                       command=print_accuracy)
+        button_accuracy_lvq.grid(row=3, column=4, padx=(20, 20), pady=(20, 20))
 
     def exit(self):
         self.destroy()
