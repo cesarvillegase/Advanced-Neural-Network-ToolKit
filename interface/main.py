@@ -45,12 +45,12 @@ class App(ctk.CTk):
     def setup_sidebar_widgets(self):
         # Create a logo label inside the sidebar
         logo_label = ctk.CTkLabel(self.sidebar_frame, text="ANN ToolKit",
-                                            font=ctk.CTkFont(size=20, weight="bold"))
+                                  font=ctk.CTkFont(size=20, weight="bold"))
         logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
         # Label for the levels of abstraction
         levels_of_abstraction_label = ctk.CTkLabel(self.sidebar_frame, text="Levels:",
-                                                             anchor="w")
+                                                   anchor="w")
         levels_of_abstraction_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
 
         # Variable to store the level of abstraction choice
@@ -69,14 +69,14 @@ class App(ctk.CTk):
 
         # Create the label for the author and the description
         author_label = ctk.CTkLabel(self.sidebar_frame, text="Created by:",
-                                              font=ctk.CTkFont(size=14, weight="normal"))
+                                    font=ctk.CTkFont(size=14, weight="normal"))
         author_label.grid(row=4, column=0, padx=20, pady=(10, 0))
         author1_label = ctk.CTkLabel(self.sidebar_frame, text="Cesar A Villegas Espindola",
-                                               font=ctk.CTkFont(size=14, weight="normal"))
+                                     font=ctk.CTkFont(size=14, weight="normal"))
         author1_label.grid(row=5, column=0, padx=20, pady=(10, 20))
 
         exit_button = ctk.CTkButton(self.sidebar_frame, fg_color="red", text="Close App",
-                                              command=self.exit, anchor="w")
+                                    command=self.exit, anchor="w")
         exit_button.grid(row=6, column=0, padx=20, pady=(10, 20))
 
     def create_tabview(self):
@@ -152,21 +152,21 @@ class App(ctk.CTk):
 
         # Radio buttons for selecting the Images
         first_image_radio = ctk.CTkRadioButton(tab, text="First Image",
-                                                         variable=image_choice_var, value="First Image")
+                                               variable=image_choice_var, value="First Image")
         first_image_radio.grid(row=4, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         first_image_label = ctk.CTkLabel(tab, image=image1, text="")
         first_image_label.grid(row=5, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         second_image_radio = ctk.CTkRadioButton(tab, text="Second Image",
-                                                          variable=image_choice_var, value="Second Image")
+                                                variable=image_choice_var, value="Second Image")
         second_image_radio.grid(row=4, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
 
         second_image_label = ctk.CTkLabel(tab, image=image2, text="")
         second_image_label.grid(row=5, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
 
         third_image_radio = ctk.CTkRadioButton(tab, text="Third Image",
-                                                         variable=image_choice_var, value="Third Image")
+                                               variable=image_choice_var, value="Third Image")
         third_image_radio.grid(row=4, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
         third_image_label = ctk.CTkLabel(tab, image=image3, text="")
@@ -237,15 +237,15 @@ class App(ctk.CTk):
 
         # Create buttons for training and reconstruction
         button_train_hop = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                   text="Train algorithm",
-                                                   text_color=("gray10", "#DCE4EE"),
-                                                   anchor="w", command=train_hopfield)
+                                         text="Train algorithm",
+                                         text_color=("gray10", "#DCE4EE"),
+                                         anchor="w", command=train_hopfield)
         button_train_hop.grid(row=6, column=0, padx=(20, 20), pady=(20, 20))
 
         button_reconstruction_hop = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                            text="Reconstruct image",
-                                                            text_color=("gray10", "#DCE4EE"),
-                                                            anchor="w", command=reconstruct_selected_image)
+                                                  text="Reconstruct image",
+                                                  text_color=("gray10", "#DCE4EE"),
+                                                  anchor="w", command=reconstruct_selected_image)
         button_reconstruction_hop.grid(row=6, column=1, padx=(20, 20), pady=(20, 20))
 
     def plot_images_hop(self, original_img, noisy_img, reconstructed_img):
@@ -368,7 +368,7 @@ class App(ctk.CTk):
             else:
                 print("An error occurred")
 
-        self.label_results = ctk.CTkLabel(tab, text="", wraplength=300)
+        self.label_results = ctk.CTkLabel(tab, text="", wraplength=400, font=("bold", 18))
         self.label_results.grid(row=6, column=0, padx=20, pady=20, sticky="ew")
 
         # test the network
@@ -397,19 +397,19 @@ class App(ctk.CTk):
                 plt.show()
 
         button_train_bp = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                  text="Train Network", text_color=("gray10", "#DCE4EE"),
-                                                  command=train_backprop)
+                                        text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                        command=train_backprop)
 
-        button_train_bp.grid(row=5, column=0, padx=(20, 20), pady=(20, 20)) # , sticky="nsew"
+        button_train_bp.grid(row=5, column=0, padx=(20, 20), pady=(20, 20))  # , sticky="nsew"
 
         button_test_bp = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                 text="Test Network", text_color=("gray10", "#DCE4EE"),
-                                                 command=test_backprop)
+                                       text="Test Network", text_color=("gray10", "#DCE4EE"),
+                                       command=test_backprop)
         button_test_bp.grid(row=5, column=1, padx=(20, 20), pady=(20, 20))
 
         button_loss_bp = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                 text="Plot loss", text_color=("gray10", "#DCE4EE"),
-                                                 command=plot_loss_from_test)
+                                       text="Plot loss", text_color=("gray10", "#DCE4EE"),
+                                       command=plot_loss_from_test)
         button_loss_bp.grid(row=5, column=2, padx=(20, 20), pady=(20, 20))
 
     # ########### 3rd Tab ###########
@@ -442,7 +442,7 @@ class App(ctk.CTk):
             label_num_points_pclass.grid(row=1, column=0, padx=20, pady=20)
 
             entry_num_points_per_class_som = ctk.CTkEntry(tab, placeholder_text="Number of points per class",
-                                                                    textvariable=num_point_per_class_som)
+                                                          textvariable=num_point_per_class_som)
             entry_num_points_per_class_som.grid(row=1, column=1, padx=(20, 0), pady=(20, 20))
 
             # Attach the trace callback to the text variable
@@ -625,42 +625,38 @@ class App(ctk.CTk):
                 epoch_max = int(epoch_max_str)
 
                 print("Training phase")
-
+                self.norm_data = som_model.norm_data(self.data)
                 # Now, you can use the data to train your neural network using the SOM model
-                self.trained_weights = som_model.train(num_of_neurons, input_dim, self.data, learning_rate, epoch_max)
+                self.pretrained_weights = som_model.train(num_of_neurons, input_dim, self.norm_data, learning_rate,
+                                                          epoch_max)
                 print("Training completed.")
 
             except Exception as e:
                 print(f"An error occurred: {e}")
 
         def plot_som():
-            fig, ax = plt.subplots(figsize=(4, 4))
-
-            # Plot training data
-            ax.scatter(self.data[:, 0], self.data[:, 1], c='r', marker='x', label='Training Data')
-
-            # Plot trained weights
-            ax.scatter(self.trained_weights[:, 0], self.trained_weights[:, 1], c='b', marker='o', label='Neurons')
-
-            ax.set_title("Trained weights")
-            ax.legend()
-
-            plt.show()
+            with plt.style.context('seaborn-v0_8-darkgrid'):
+                # Plot training data
+                plt.scatter(self.norm_data[:, 0], self.norm_data[:, 1], c='r', marker='x', label='Training Data')
+                # Plot trained weights
+                plt.scatter(self.pretrained_weights[:, 0], self.pretrained_weights[:, 1], c='b', marker='o', label='Neurons')
+                plt.title("Trained weights")
+                plt.legend()
+                plt.show()
 
         button_generate_data_som = ctk.CTkButton(tab, fg_color="#219ebc", border_width=2,
-                                                           text="Generate data", text_color="white",
-                                                           command=generate_data)
-        # command=generate_data_som()) num_points_p_class=, num_classes=
+                                                 text="Generate data", text_color="white",
+                                                 command=generate_data)
         button_generate_data_som.grid(row=7, column=0, padx=(20, 20), pady=(20, 20))
 
         button_train_network = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                       text="Train Network", text_color=("gray10", "#DCE4EE"),
-                                                       command=train_som)
+                                             text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                             command=train_som)
         button_train_network.grid(row=7, column=1, padx=(20, 20), pady=(20, 20))
 
         button_plot_results = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                      text="Plot results", text_color=("gray10", "#DCE4EE"),
-                                                      command=plot_som)
+                                            text="Plot results", text_color=("gray10", "#DCE4EE"),
+                                            command=plot_som)
         button_plot_results.grid(row=7, column=2, padx=(20, 20), pady=(20, 20))
 
     # ########### 4th Tab ###########
@@ -759,21 +755,21 @@ class App(ctk.CTk):
 
         # Radio buttons for selecting the Images
         first_image_radio = ctk.CTkRadioButton(tab, text="First Image",
-                                                         variable=image_choice_var, value="First Image")
+                                               variable=image_choice_var, value="First Image")
         first_image_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         first_image_label = ctk.CTkLabel(tab, image=image1, text="")
         first_image_label.grid(row=4, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         second_image_radio = ctk.CTkRadioButton(tab, text="Second Image",
-                                                          variable=image_choice_var, value="Second Image")
+                                                variable=image_choice_var, value="Second Image")
         second_image_radio.grid(row=3, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
 
         second_image_label = ctk.CTkLabel(tab, image=image2, text="")
         second_image_label.grid(row=4, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
 
         third_image_radio = ctk.CTkRadioButton(tab, text="Third Image",
-                                                         variable=image_choice_var, value="Third Image")
+                                               variable=image_choice_var, value="Third Image")
         third_image_radio.grid(row=3, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
         third_image_label = ctk.CTkLabel(tab, image=image3, text="")
@@ -851,19 +847,19 @@ class App(ctk.CTk):
             plt.show()
 
         button_train_ac = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                  text="Train Network", text_color=("gray10", "#DCE4EE"),
-                                                  command=train_ac)
+                                        text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                        command=train_ac)
         button_train_ac.grid(row=6, column=0, padx=(20, 20), pady=(20, 20))
 
         button_reconstruction_ac = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                           text="Reconstruct image",
-                                                           text_color=("gray10", "#DCE4EE"),
-                                                           anchor="w", command=reconstruct_selected_image)
+                                                 text="Reconstruct image",
+                                                 text_color=("gray10", "#DCE4EE"),
+                                                 anchor="w", command=reconstruct_selected_image)
         button_reconstruction_ac.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         button_plot_loss_ac = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                                      text="Plot loss", text_color=("gray10", "#DCE4EE"),
-                                                      command=plot_loss_from_training)
+                                            text="Plot loss", text_color=("gray10", "#DCE4EE"),
+                                            command=plot_loss_from_training)
         button_plot_loss_ac.grid(row=6, column=2, padx=(20, 20), pady=(20, 20))
 
     def plot_images(self, original_image, reconstructed_img):
@@ -901,6 +897,7 @@ class App(ctk.CTk):
 
     def exit(self):
         self.destroy()
+
 
 if __name__ == "__main__":
     app = App()

@@ -22,9 +22,9 @@ class SOM:
         return normalized_weights
 
     # =============TRAIN PHASE=============
-    def train(self, num_neurons, input_dim, data, alpha, epoch_max):
+    def train(self, num_neurons, input_dim, input, alpha, epoch_max):
         normalized_weights = self.init_weights(num_neurons, input_dim)
-        normalized_data = self.norm_data(data)
+        normalized_data = self.norm_data(input)
         for epoch in range(epoch_max):
             for data in normalized_data:
                 # Compute the Euclidean distance
@@ -93,6 +93,6 @@ norm_X_train_som = model.norm_data(X_train_som)
 weights_som = model.init_weights(num_neurons=12, input_dim=2)
 plot(norm_X_train_som, weights_som, title='Before the training')
 
-pretrained_weights_som = model.train(num_neurons=8, input_dim=2, data=norm_X_train_som, alpha=0.4, epoch_max=1200)
+pretrained_weights_som = model.train(num_neurons=8, input_dim=2, input=norm_X_train_som, alpha=0.4, epoch_max=1200)
 plot(norm_X_train_som, pretrained_weights_som, title='After training')
 '''
