@@ -48,3 +48,17 @@ class HopfieldNetwork:
         rec_img_b = self._neuron_update(self.weights_b, noisy_data[:, :, 2].flatten()).reshape(noisy_data.shape[0], noisy_data.shape[1])
         recovered_image = np.dstack((rec_img_r, rec_img_g, rec_img_b))
         return recovered_image
+
+def plot_images_hop(original_img, noisy_img, reconstructed_img):
+    """Plot the original, noisy, and reconstructed images."""
+    plt.figure(figsize=(12, 4))
+    imgs = [original_img[0], noisy_img[0],
+            reconstructed_img[0]]  # Access the first element since each is wrapped in a list
+    titles = ['Original Image', 'Noisy Image', 'Reconstructed Image']
+    for i in range(3):
+        plt.subplot(1, 3, i + 1)
+        plt.imshow(imgs[i].astype(np.uint8))
+        plt.title(titles[i])
+        plt.axis('off')
+    plt.tight_layout()
+    plt.show()

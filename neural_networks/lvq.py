@@ -29,7 +29,7 @@ class LvqNetwork:
         return normalized_vectors
 
     def train(self, data, y, delta, epoch_max):
-        normalized_data = self. norm_data(data)
+        normalized_data = self.norm_data(data)
         self.vectors = self.init_vectors(normalized_data, y)
         for epoch in range(epoch_max):
             for data_point in range(len(normalized_data)):
@@ -74,8 +74,13 @@ def plot_lvq(normalized_data, normalized_vectors, y, title, test=False):
         plt.show()
 
 
+def accuracy_lvq(y_test, y_pred_lvq):
+    accuracy = accuracy_score(y_test, y_pred_lvq)
+    results = f'> Accuracy of the model: {accuracy:.2f} | True labels: {y_test} | Predicted labels: {y_pred_lvq}'
+    return results
 
-# TESTING    
+
+# TESTING
 
 # Training data
 

@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.metrics import accuracy_score
 
 
 class AutoEncoder:
@@ -79,6 +80,39 @@ class AutoEncoder:
 
         return self.loss, latent_space, decoded_inputs
 
+def plot_loss_ac(loss_accuracy):
+    with plt.style.context('seaborn-v0_8-darkgrid'):
+        plt.plot(range(1, len(loss_accuracy) + 1), loss_accuracy, color='orange', label='MSE')
+        plt.title("Training for the Auto encoder")
+        plt.xlabel('Epochs')
+        plt.ylabel('Loss')
+        plt.legend()
+        plt.show()
+
+        print(loss_accuracy[-1])
+
+def plot_images_ac(original_image, reconstructed_img):
+    """Plot the original, noisy, and reconstructed images."""
+    plt.figure(figsize=(8, 4))
+
+    # Reshape and convert the original image to a NumPy array
+    original_image_array = np.array(original_image[0])
+    original_image_array = original_image_array.astype(np.uint8)  # + 1) / 2 * 255
+
+    # Plot the original image
+    plt.subplot(1, 2, 1)
+    plt.imshow(original_image_array)
+    plt.title('Original Image')
+    plt.axis('off')  # Turn off axes
+
+    # Plot the reconstructed image
+    plt.subplot(1, 2, 2)
+    plt.imshow(reconstructed_img)
+    plt.title('Reconstructed Image')
+    plt.axis('off')
+
+    plt.tight_layout()
+    plt.show()
 
 # TESTING
 '''
@@ -94,15 +128,4 @@ print(f"\nOriginal Inputs: \n{X_train_ac.flatten()}")
 print(f"\nLatent Space: \n{latent_space}")
 print(f"\nReconstructed Inputs: \n{decoded_inputs_ac}")
 
-
-def plot_loss(loss_accuracy):
-    with plt.style.context('seaborn-v0_8-darkgrid'):
-        plt.plot(range(1, len(loss_accuracy) + 1), loss_accuracy, color='orange', label='MSE')
-        plt.title("Training for the Auto encoder")
-        plt.xlabel('Epochs')
-        plt.ylabel('Loss')
-        plt.legend()
-        plt.show()
-
-        print(loss_accuracy[-1])
 '''
