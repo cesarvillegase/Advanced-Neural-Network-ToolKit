@@ -2,9 +2,9 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn_som.som import SOM
 
-
-class SOM:
+class SOMNetwork:
     @staticmethod
     def norm_data(data):
         min_value = np.min(data)
@@ -58,7 +58,7 @@ def plot(data, weights, title):
     # TESTING
 
 
-def generate_data(num_points_p_class, num_classes):
+def generate_random_data(num_points_p_class, num_classes):
     np.random.seed(42)
     data = []
     labels = []
@@ -81,11 +81,29 @@ def generate_data(num_points_p_class, num_classes):
 
     return data, y
 
+class SOMsklearn:
+    def __init__(self, m, n, dim, lr, sigma):
+        self.m = m
+        self.n = n
+        self.dim = dim
+        self.lr = lr
+        self.sigma = sigma
+        self.model_som = SOM(m=m, n=n, dim=dim, lr=lr, sigma=sigma)
+
+    def train(self, data):
+        self.model_som.fit(data)
+        weights = self.model_som.weights
+        return weights
+
+    def predict(self, data):
+        predictions = self.model_som.predict(data)
+        return predictions
+
 
 '''
-X_train_som, labels_som = generate_data(num_points_p_class=20, num_classes=2)
+X_train_som, labels_som = generate_random_data(num_points_p_class=20, num_classes=2)
 
-print(X_train_som)
+print(X_train_som.shape)
 
 model = SOM()
 
@@ -95,4 +113,5 @@ plot(norm_X_train_som, weights_som, title='Before the training')
 
 pretrained_weights_som = model.train(num_neurons=8, input_dim=2, input=norm_X_train_som, alpha=0.4, epoch_max=1200)
 plot(norm_X_train_som, pretrained_weights_som, title='After training')
+
 '''
