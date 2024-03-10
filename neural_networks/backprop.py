@@ -1,6 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# import tensorflow as tf
+from tensorflow import keras
+
 
 class Backpropagation:
     def __init__(self, input_neurons, hidden_neurons, output_neurons):
@@ -90,7 +93,7 @@ class Backpropagation:
         return self.loss, output_activation, results
 
 
-# Function to plot the loss 
+# Function to plot the loss
 def plot_loss(loss_value):
     plt.plot(range(1, len(loss_value) + 1), loss_value, color='blue', label='Mean Square Error')
     plt.title("Training loss")
@@ -98,6 +101,47 @@ def plot_loss(loss_value):
     plt.ylabel('Loss')
     plt.legend()
     plt.show()
+
+
+class BackpropagationKeras:
+    def __init__(self, input_neurons, hidden_neurons, output_neurons):
+        self.input_neurons = input_neurons
+        self.hidden_neurons = hidden_neurons
+        self.output_neurons = output_neurons
+        self.history = None
+
+        # Initialize the Keras model
+        self.model = keras.Sequential([
+            keras.layers.Dense(hidden_neurons, input_shape=(input_neurons,), activation='sigmoid'),
+            keras.layers.Dense(output_neurons, activation='sigmoid')
+        ])
+
+    def train(self, data, label, learning_rate):
+        # Compile and train the Keras model
+        self.model.compile(optimizer=keras.optimizers.Adam(learning_rate=learning_rate),
+                           loss='binary_crossentropy',
+                           metrics=['accuracy'])
+
+        # train the model
+        self.history = self.model.fit(data, label, epochs=200, verbose=0)
+
+    def test(self, data, labels):
+        # Evaluate the model
+        test_loss, test_acc = self.model.evaluate(data, labels)
+        print(f'\nAccuracy on the test set: {test_acc}')
+
+        results = []
+
+        # Make predictions
+        predictions = self.model.predict(data)
+        print("\nPredictions:")
+        for i in range(len(predictions)):
+            print(
+                f"Input: {data[i, 1:]} | Expected: {labels[i]},| Predicted: {np.round(predictions[i][0])}")
+
+            results.append(f"Input: {data[i, 1:]} | Expected: {labels[i]} | Predicted: {np.round(predictions[i][0])}")
+
+        return self.history, test_acc, results
 
 
 '''

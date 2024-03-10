@@ -7,7 +7,7 @@ import numpy as np
 from customtkinter import CTkRadioButton
 
 from neural_networks.hopfield import HopfieldNetwork, plot_images_hop, HopfieldNetworkNeurolab
-from neural_networks.backprop import Backpropagation, plot_loss
+from neural_networks.backprop import Backpropagation, plot_loss, BackpropagationKeras
 from neural_networks.som_kohonen import SOM
 from neural_networks.autoencoder import AutoEncoder, plot_images_ac, plot_loss_ac
 from neural_networks.lvq import LvqNetwork, plot_lvq, accuracy_lvq
@@ -246,14 +246,15 @@ class App(ctk.CTk):
                     reconstructed_image = self.hopfield_model.reconstruct(noisy_data)
                     # Plot the original, noisy, and reconstructed images
                     rec_img = [((reconstructed_image + 1) / 2 * 255).astype(np.uint8)]
+                    print("Test phase completed (Low Level)")
                 elif abstraction_level == "High Level":
                     reconstructed_image = self.hopfield_model_neurolab.reconstruct(noisy_data)
                     rec_img = [((reconstructed_image + 1) / 2 * 255).astype(np.uint8)]
+                    print("Test phase completed (High Level)")
 
                 original_img = [((data + 1) / 2 * 255).astype(np.uint8)]
                 noisy_img = [((noisy_data + 1) / 2 * 255).astype(np.uint8)]
                 plot_images_hop(original_img, noisy_img, rec_img)
-                print("Reconstruction phase completed")
 
 
         # Create buttons for training and reconstruction
@@ -274,8 +275,9 @@ class App(ctk.CTk):
         label_tab_backprop = ctk.CTkLabel(tab, text="Backpropagation Network", font=("bold", 24))
         label_tab_backprop.grid(row=0, column=0, padx=20, pady=20, sticky="w")
 
-        # Instantiate an object of the Backpropagation class
+        # Instantiate an object of the Backpropagation classes
         backpropagation_model = Backpropagation(input_neurons=3, hidden_neurons=3, output_neurons=1)
+        backpropagation_keras_model = BackpropagationKeras(input_neurons=3, hidden_neurons=3, output_neurons=1)
 
         learning_rate_bp = StringVar()
 
@@ -366,10 +368,16 @@ class App(ctk.CTk):
 
         def train_backprop():
             data, label = get_selected_dataset()
+            # Obtain the selected abstraction level
+            abstraction_level = self.abstraction_level_var.get()
+            learning_rate = float(learning_rate_bp.get())
             if data is not None and label is not None:
-                print("Train phase")
-                learning_rate = float(learning_rate_bp.get())
-                backpropagation_model.train(data, label, learning_rate)
+                if abstraction_level == "Low Level":
+                    backpropagation_model.train(data, label, learning_rate)
+                    print("Train phase completed (Low Level)")
+                elif abstraction_level == "High Level":
+                    backpropagation_keras_model.train(data, label, learning_rate)
+                    print("Train phase completed (High Level)")
             else:
                 print("An error occurred")
 
@@ -379,18 +387,36 @@ class App(ctk.CTk):
         # test the network
         def test_backprop():
             data, label = get_selected_dataset()
+            # Obtain the selected abstraction level
+            abstraction_level = self.abstraction_level_var.get()
             if data is not None and label is not None:
                 print("Test phase")
-                _, _, results_string = backpropagation_model.test(data, label)
+                if abstraction_level == "Low Level":
+                    _, _, results_string = backpropagation_model.test(data, label)
+                elif abstraction_level == "High Level":
+                    _, _, results_string = backpropagation_keras_model.test(data, label)
                 label_results.configure(text=results_string)
             else:
                 print("An error occurred")
 
         # Plot loss
         def plot_loss_from_test():
-            # Plot the loss directly using the loss values obtained during the test
-            loss_values = backpropagation_model.loss
-            plot_loss(loss_values)
+            data, label = get_selected_dataset()
+            # Obtain the selected abstraction level
+            abstraction_level = self.abstraction_level_var.get()
+            if data is not None and label is not None:
+                print("Plotting loss")
+                if abstraction_level == "Low Level":
+                    # Plot the loss directly using the loss values obtained during the test
+                    loss_values = backpropagation_model.loss
+                    plot_loss(loss_values)
+                elif abstraction_level == "High Level":
+                    history, _, _ = backpropagation_keras_model.test(data, label)
+                    # Extract loss values from the history object
+                    loss_values = history.history['loss']
+                    plot_loss(loss_values)
+            else:
+                print("An error occurred")
 
         button_train_bp = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                         text="Train Network", text_color=("gray10", "#DCE4EE"),
