@@ -1,16 +1,13 @@
-from tkinter import StringVar  # filedialog as fd,
+from tkinter import StringVar
 from PIL import Image, ImageTk
-# from tkinter.messagebox import showinfo
 
 import customtkinter as ctk
 import matplotlib.pyplot as plt
 import numpy as np
 from customtkinter import CTkRadioButton
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from sklearn.metrics import accuracy_score
 
-from neural_networks.hopfield import HopfieldNetwork, plot_images_hop
-from neural_networks.backprop import Backpropagation
+from neural_networks.hopfield import HopfieldNetwork, plot_images_hop, HopfieldNetworkNeurolab
+from neural_networks.backprop import Backpropagation, plot_loss
 from neural_networks.som_kohonen import SOM
 from neural_networks.autoencoder import AutoEncoder, plot_images_ac, plot_loss_ac
 from neural_networks.lvq import LvqNetwork, plot_lvq, accuracy_lvq
@@ -55,17 +52,17 @@ class App(ctk.CTk):
         levels_of_abstraction_label.grid(row=1, column=0, padx=20, pady=(10, 0), sticky="w")
 
         # Variable to store the level of abstraction choice
-        abstraction_level_var = ctk.StringVar(
+        self.abstraction_level_var = ctk.StringVar(
             value="Low Level")  # Default value can be "Low Level" or "High Level"
 
         # Radio button for Low Level
         low_level_radio = CTkRadioButton(self.sidebar_frame, text="Low-Level",
-                                         variable=abstraction_level_var, value="Low Level")
+                                         variable=self.abstraction_level_var, value="Low Level")
         low_level_radio.grid(row=2, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # Radio button for High Level
         high_level_radio = CTkRadioButton(self.sidebar_frame, text="High-Level",
-                                          variable=abstraction_level_var, value="High Level")
+                                          variable=self.abstraction_level_var, value="High Level")
         high_level_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5), sticky="w")
 
         # Create the label for the author and the description
@@ -215,26 +212,49 @@ class App(ctk.CTk):
         # train the network
         def train_hopfield():
             data, noisy_data = get_selected_image_data()
+            # Obtain the selected abstraction level
+            abstraction_level = self.abstraction_level_var.get()
             if data is not None and noisy_data is not None:
-                if epoch_max_hop.get().isdigit():
-                    epoch_max_hop_value = int(epoch_max_hop.get())
-                    self.hopfield_model = HopfieldNetwork(epoch_max=epoch_max_hop_value)
-                    self.hopfield_model.train([data])
-                    print("Training phase completed")
+                if abstraction_level == "Low Level":
+                    # Utilizar la implementación de bajo nivel
+                    if epoch_max_hop.get().isdigit():
+                        epoch_max_hop_value = int(epoch_max_hop.get())
+                        self.hopfield_model = HopfieldNetwork(epoch_max=epoch_max_hop_value)
+                        self.hopfield_model.train([data])
+                        print("Training phase completed (Low Level)")
+                    else:
+                        print("Epoch max needs to be an integer value.")
+                elif abstraction_level == "High Level":
+                    # Utilizar la implementación encapsulada con neurolab
+                    try:
+                        self.hopfield_model_neurolab = HopfieldNetworkNeurolab()
+                        self.hopfield_model_neurolab.train(data)
+                        print("Training phase completed (High Level)")
+                    except Exception as e:
+                        print(f"Error during training (High Level): {e}")
                 else:
-                    print("Epoch max needs to be an integer value.")
+                    print("Invalid abstraction level selected.")
+
 
         # Modify the function call to plot_images
         def reconstruct_selected_image():
             data, noisy_data = get_selected_image_data()
+            # Obtain the selected abstraction level
+            abstraction_level = self.abstraction_level_var.get()
             if data is not None:
-                reconstructed_image = self.hopfield_model.reconstruct(noisy_data)
-                # Plot the original, noisy, and reconstructed images
+                if abstraction_level == "Low Level":
+                    reconstructed_image = self.hopfield_model.reconstruct(noisy_data)
+                    # Plot the original, noisy, and reconstructed images
+                    rec_img = [((reconstructed_image + 1) / 2 * 255).astype(np.uint8)]
+                elif abstraction_level == "High Level":
+                    reconstructed_image = self.hopfield_model_neurolab.reconstruct(noisy_data)
+                    rec_img = [((reconstructed_image + 1) / 2 * 255).astype(np.uint8)]
+
                 original_img = [((data + 1) / 2 * 255).astype(np.uint8)]
                 noisy_img = [((noisy_data + 1) / 2 * 255).astype(np.uint8)]
-                rec_img = [((reconstructed_image + 1) / 2 * 255).astype(np.uint8)]
                 plot_images_hop(original_img, noisy_img, rec_img)
                 print("Reconstruction phase completed")
+
 
         # Create buttons for training and reconstruction
         button_train_hop = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
@@ -283,69 +303,67 @@ class App(ctk.CTk):
 
         entry_learning_rate_bp()
 
-        def data_options():
-            # Images for the labels
-            pil_xor = Image.open(
-                r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\backprop\data\xor_gate.jpeg")
-            resized_image_xor = pil_xor.resize((120, 120))
-            image_xor = ImageTk.PhotoImage(resized_image_xor)
+        # Images for the labels
+        pil_xor = Image.open(
+            r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\backprop\data\xor_gate.jpeg")
+        resized_image_xor = pil_xor.resize((120, 120))
+        image_xor = ImageTk.PhotoImage(resized_image_xor)
 
-            pil_xnor = Image.open(
-                r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\backprop\data\xnor_gate.jpeg")
-            resized_image_xnor = pil_xnor.resize((120, 120))
-            image_xnor = ImageTk.PhotoImage(resized_image_xnor)
+        pil_xnor = Image.open(
+            r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\backprop\data\xnor_gate.jpeg")
+        resized_image_xnor = pil_xnor.resize((120, 120))
+        image_xnor = ImageTk.PhotoImage(resized_image_xnor)
 
-            pil_nand = Image.open(
-                r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\backprop\data\nand_gate.jpeg")
-            resized_image_nand = pil_nand.resize((120, 120))
-            image_nand = ImageTk.PhotoImage(resized_image_nand)
+        pil_nand = Image.open(
+            r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\backprop\data\nand_gate.jpeg")
+        resized_image_nand = pil_nand.resize((120, 120))
+        image_nand = ImageTk.PhotoImage(resized_image_nand)
 
-            # select the image that you want to decode, Variable to store the image of choice
-            self.dataset_choice_var = ctk.StringVar(value="XOR")  # Default is "First Image"
+        dataset_choice_label = ctk.CTkLabel(tab, text="Dataset:", font=("bold", 24))
+        dataset_choice_label.grid(row=2, column=0, padx=(20, 0), pady=(20, 20))
 
-            dataset_choice_label = ctk.CTkLabel(tab, text="Dataset:", font=("bold", 24))
-            dataset_choice_label.grid(row=2, column=0, padx=(20, 0), pady=(20, 20))
+        # select the image that you want to decode, Variable to store the image of choice
+        dataset_choice_var = ctk.StringVar(value="XOR")  # Default is "First Image"
 
-            # Radio buttons for the selecting datasets
-            xor_radio = ctk.CTkRadioButton(tab, text="XOR", variable=self.dataset_choice_var, value="XOR")
-            xor_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5))
-            xor_label = ctk.CTkLabel(tab, image=image_xor, text="")
-            xor_label.grid(row=4, column=0, padx=(20, 0), pady=(5, 5))
+        # Radio buttons for the selecting datasets
+        xor_radio = ctk.CTkRadioButton(tab, text="XOR", variable=dataset_choice_var, value="XOR")
+        xor_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5))
+        xor_label = ctk.CTkLabel(tab, image=image_xor, text="")
+        xor_label.grid(row=4, column=0, padx=(20, 0), pady=(5, 5))
 
-            xnor_radio = ctk.CTkRadioButton(tab, text="XNOR", variable=self.dataset_choice_var, value="XNOR")
-            xnor_radio.grid(row=3, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
-            xnor_label = ctk.CTkLabel(tab, image=image_xnor, text="")
-            xnor_label.grid(row=4, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
+        xnor_radio = ctk.CTkRadioButton(tab, text="XNOR", variable=dataset_choice_var, value="XNOR")
+        xnor_radio.grid(row=3, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
+        xnor_label = ctk.CTkLabel(tab, image=image_xnor, text="")
+        xnor_label.grid(row=4, column=1, padx=(20, 0), pady=(5, 5), sticky="w")
 
-            nand_radio = ctk.CTkRadioButton(tab, text="NAND", variable=self.dataset_choice_var, value="NAND")
-            nand_radio.grid(row=3, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
-            nand_label = ctk.CTkLabel(tab, image=image_nand, text="")
-            nand_label.grid(row=4, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
+        nand_radio = ctk.CTkRadioButton(tab, text="NAND", variable=dataset_choice_var, value="NAND")
+        nand_radio.grid(row=3, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
+        nand_label = ctk.CTkLabel(tab, image=image_nand, text="")
+        nand_label.grid(row=4, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
-            self.xor_data_array = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
-            self.xor_labels_array = np.array([[0], [1], [1], [0]])
+        xor_data_array = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
+        xor_labels_array = np.array([[0], [1], [1], [0]])
 
-            self.xnor_data_array = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
-            self.xnor_labels_array = np.array([[1], [0], [0], [1]])
+        xnor_data_array = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
+        xnor_labels_array = np.array([[1], [0], [0], [1]])
 
-            self.nand_data_array = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
-            self.nand_labels_array = np.array([[1], [1], [1], [0]])
-
-        data_options()
+        nand_data_array = np.array([[1, 0, 0], [1, 0, 1], [1, 1, 0], [1, 1, 1]])
+        nand_labels_array = np.array([[1], [1], [1], [0]])
 
         # ######## Function to obtain the chosen dataset ########
         def get_selected_dataset():
-            selected_value = self.dataset_choice_var.get()
+            selected_value = dataset_choice_var.get()
             if selected_value == "XOR":
-                return self.xor_data_array, self.xor_labels_array
+                return xor_data_array, xor_labels_array
             elif selected_value == "XNOR":
-                return self.xnor_data_array, self.xnor_labels_array
+                return xnor_data_array, xnor_labels_array
             elif selected_value == "NAND":
-                return self.nand_data_array, self.nand_labels_array
+                return nand_data_array, nand_labels_array
             else:
                 return None, None
 
-        # train the network
+                # train the network
+
         def train_backprop():
             data, label = get_selected_dataset()
             if data is not None and label is not None:
@@ -355,8 +373,8 @@ class App(ctk.CTk):
             else:
                 print("An error occurred")
 
-        self.label_results = ctk.CTkLabel(tab, text="", wraplength=400, font=("bold", 18))
-        self.label_results.grid(row=6, column=0, padx=20, pady=20, sticky="ew")
+        label_results = ctk.CTkLabel(tab, text="", wraplength=400, font=("bold", 18))
+        label_results.grid(row=6, column=0, padx=20, pady=20, sticky="ew")
 
         # test the network
         def test_backprop():
@@ -364,7 +382,7 @@ class App(ctk.CTk):
             if data is not None and label is not None:
                 print("Test phase")
                 _, _, results_string = backpropagation_model.test(data, label)
-                self.label_results.configure(text=results_string)
+                label_results.configure(text=results_string)
             else:
                 print("An error occurred")
 
@@ -372,16 +390,7 @@ class App(ctk.CTk):
         def plot_loss_from_test():
             # Plot the loss directly using the loss values obtained during the test
             loss_values = backpropagation_model.loss
-
-            with plt.style.context('seaborn-darkgrid'):
-                plt.figure(figsize=(6, 4))
-                plt.plot(range(1, len(loss_values) + 1), loss_values, color='blue', label='Mean Square Error')
-                plt.xlabel('Epochs')
-                plt.ylabel('Loss')
-                plt.title("Training Loss")
-                plt.legend()
-                plt.grid(True)
-                plt.show()
+            plot_loss(loss_values)
 
         button_train_bp = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                         text="Train Network", text_color=("gray10", "#DCE4EE"),
@@ -817,7 +826,7 @@ class App(ctk.CTk):
                     # If decoded_inputs is still a PIL Image, convert it to a NumPy array
                     reconstructed_image = Image.fromarray(np.uint8(self.decoded_inputs))
 
-                original_img = [(data)]
+                original_img = [data]
 
                 plot_images_ac(original_img, reconstructed_image)
 
@@ -889,7 +898,7 @@ class App(ctk.CTk):
 
             # Use learning_rate as the text variable for the entry widget
             entry_epoch_max_lvq = ctk.CTkEntry(tab, textvariable=epoch_max_lvq)
-            entry_epoch_max_lvq.grid(row=1, column=3, padx=(20), pady=(20))
+            entry_epoch_max_lvq.grid(row=1, column=3, padx=20, pady=20)
 
             # Attach the trace callback to the text variable
             epoch_max_lvq.trace("w", parse_entry)
@@ -911,26 +920,28 @@ class App(ctk.CTk):
             dataset_choice_label.grid(row=2, column=0, padx=(20, 0), pady=(20, 20))
 
             # Radio buttons for the selecting datasets
-            xor_radio = ctk.CTkRadioButton(tab, text="Example Data", variable=self.dataset_choice_var, value="Example Data")
+            xor_radio = ctk.CTkRadioButton(tab, text="Example Data", variable=self.dataset_choice_var,
+                                           value="Example Data")
             xor_radio.grid(row=3, column=0, padx=(20, 0), pady=(5, 5))
             xor_label = ctk.CTkLabel(tab, image=image_example_data, text="")
             xor_label.grid(row=4, column=0, padx=(20, 0), pady=(5, 5))
 
-            self.example_X_train_array = np.array([[5.2, 6.7], [2.0, 3.0], [4.0, 5.0], [7.9, 6.1], [1.0, 2.0], [7.1, 8.9],
-                                                      [2.0, 1.0], [5.1, 7.2], [3.0, 3.0], [7.9, 5.2], [4.0, 5.0], [2.9, 3.2],
-                                                      [4.1, 5.7], [1.2, 2.8], [7.9, 6.2], [5.2, 6.1], [9.2, 8.1], [2.2, 1.1],
-                                                      [3.98, 2.0], [4.8, 5.2], [9.9, 8.2], [7.1, 5.7], [5.2, 7.9], [7.2, 8.1]])
+            self.example_X_train_array = np.array(
+                [[5.2, 6.7], [2.0, 3.0], [4.0, 5.0], [7.9, 6.1], [1.0, 2.0], [7.1, 8.9],
+                 [2.0, 1.0], [5.1, 7.2], [3.0, 3.0], [7.9, 5.2], [4.0, 5.0], [2.9, 3.2],
+                 [4.1, 5.7], [1.2, 2.8], [7.9, 6.2], [5.2, 6.1], [9.2, 8.1], [2.2, 1.1],
+                 [3.98, 2.0], [4.8, 5.2], [9.9, 8.2], [7.1, 5.7], [5.2, 7.9], [7.2, 8.1]])
 
             self.example_y_train_array = np.array([0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1,
-                                                        1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0])
+                                                   1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0])
 
             self.example_X_test_array = np.array([[5.0, 8.0], [9.0, 8.0], [2.0, 9.0], [4.0, 8.0], [4.0, 7.0],
-                                                     [2.0, 6.0], [3.0, 1.0], [1.0, 4.0], [1.0, 1.0], [4.0, 3.0],
-                                                     [5.9, 6.2], [2.6, 3.2], [4.8, 5.1], [1.7, 2.2], [2.9, 1.5],
-                                                     [4.5, 5.2], [9.0, 8.0], [7.2, 5.9], [5.1, 7.8], [7.2, 8.9]])
+                                                  [2.0, 6.0], [3.0, 1.0], [1.0, 4.0], [1.0, 1.0], [4.0, 3.0],
+                                                  [5.9, 6.2], [2.6, 3.2], [4.8, 5.1], [1.7, 2.2], [2.9, 1.5],
+                                                  [4.5, 5.2], [9.0, 8.0], [7.2, 5.9], [5.1, 7.8], [7.2, 8.9]])
 
             self.example_y_test_array = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-                                               0, 1, 1, 1, 1, 1, 0, 0, 0, 0])
+                                                  0, 1, 1, 1, 1, 1, 0, 0, 0, 0])
 
         data_options()
 
@@ -955,7 +966,7 @@ class App(ctk.CTk):
             X_train, y_train, X_test, y_test = get_selected_dataset()
             if X_train is not None and y_train is not None:
                 print("Train phase")
-                learning_rate= float(learning_rate_lvq.get())
+                learning_rate = float(learning_rate_lvq.get())
                 epoch_max = int(epoch_max_lvq.get())
 
                 norm_X_train_lvq = model_lvq.norm_data(X_train)
@@ -971,7 +982,7 @@ class App(ctk.CTk):
                 print("Test phase")
 
                 norm_X_test_lvq = model_lvq.norm_data(X_test)
-                self.y_pred_lvq = model_lvq.test(norm_X_test_lvq) # Predicted labels
+                self.y_pred_lvq = model_lvq.test(norm_X_test_lvq)  # Predicted labels
                 plot_lvq(norm_X_test_lvq, self.trained_vectors_lvq, self.y_pred_lvq, title='Test LVQ', test=True)
             else:
                 print("An error occurred")
@@ -992,19 +1003,19 @@ class App(ctk.CTk):
         button_example_data.grid(row=3, column=1, padx=(20, 20), pady=(20, 20))  # , sticky="nsew"
 
         button_train_lvq = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                        text="Train Network", text_color=("gray10", "#DCE4EE"),
-                                        command=train_lvq)
+                                         text="Train Network", text_color=("gray10", "#DCE4EE"),
+                                         command=train_lvq)
 
         button_train_lvq.grid(row=3, column=2, padx=(20, 20), pady=(20, 20))  # , sticky="nsew"
 
         button_test_lvq = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                       text="Test Network", text_color=("gray10", "#DCE4EE"),
-                                       command=test_lvq)
+                                        text="Test Network", text_color=("gray10", "#DCE4EE"),
+                                        command=test_lvq)
         button_test_lvq.grid(row=3, column=3, padx=(20, 20), pady=(20, 20))
 
         button_accuracy_lvq = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
-                                       text="Accuracy", text_color=("gray10", "#DCE4EE"),
-                                       command=print_accuracy)
+                                            text="Accuracy", text_color=("gray10", "#DCE4EE"),
+                                            command=print_accuracy)
         button_accuracy_lvq.grid(row=3, column=4, padx=(20, 20), pady=(20, 20))
 
     def exit(self):
