@@ -9,8 +9,8 @@ from customtkinter import CTkRadioButton
 from neural_networks.hopfield import HopfieldNetwork, plot_images_hop, HopfieldNetworkNeurolab
 from neural_networks.backprop import Backpropagation, plot_loss, BackpropagationKeras
 from neural_networks.som_kohonen import SOMNetwork, generate_random_data, SOMsklearn
-from neural_networks.autoencoder import AutoEncoder, plot_images_ac, plot_loss_ac
-from neural_networks.lvq import LvqNetwork, plot_lvq, accuracy_lvq
+from neural_networks.autoencoder import AutoEncoder, plot_images_ac, plot_loss_ac, SimpleAutoencoder
+from neural_networks.lvq import LvqNetwork, plot_lvq, accuracy_lvq, simpleLVQ
 
 ctk.set_appearance_mode("system")
 ctk.set_default_color_theme("blue")
@@ -838,18 +838,25 @@ class App(ctk.CTk):
 
         autoencoder_model = AutoEncoder()
 
-        # loss_ac, latent_space, decoded_inputs_ac = model.train(X_train_ac, alpha_ac, momentum_ac, epoch_max_ac)
-
         def train_ac():
             data = get_selected_image_data()
+            # Obtain the selected abstraction level
+            abstraction_level = self.abstraction_level_var.get()
             if data is not None:
                 learning_rate_ac_value = float(learning_rate_ac.get())
                 momentum_ac_value = float(momentum_ac.get())
                 epoch_max_ac_value = int(epoch_max_ac.get())
-
-                self.loss, latent_space, self.decoded_inputs = autoencoder_model.train(data, learning_rate_ac_value,
-                                                                                       momentum_ac_value,
-                                                                                       epoch_max_ac_value)
+                if abstraction_level == "Low Level":
+                    self.loss, latent_space, self.decoded_inputs = autoencoder_model.train(data, learning_rate_ac_value, momentum_ac_value, epoch_max_ac_value)
+                elif abstraction_level == "High Level":
+                    input_data_shape = data.shape[1:]  # Assuming the first dimension is the number of samples
+                    latent_dimensions = 1
+                    # Create an instance of the SimpleAutoencoder model
+                    simple_autoencoder = SimpleAutoencoder(latent_dimensions, input_data_shape)
+                    # Train the autoencoder
+                    loss, latent_space, decoded_inputs = simple_autoencoder.train(data, epochs=epoch_max_ac_value)
+                    self.loss = loss
+                    self.decoded_inputs = decoded_inputs
             else:
                 print("The model need's the hyperparameters")
 
@@ -922,7 +929,7 @@ class App(ctk.CTk):
             def parse_entry(*args):
                 try:
                     # Get the input value from the entry widget
-                    input_value_str = int(epoch_max_lvq.get())
+                    input_value_str = epoch_max_lvq.get()
                     # Convert the input value to an integer
                     epoch_max_hop_value = int(input_value_str)
                     # Use the learning_rate_value here
@@ -991,6 +998,7 @@ class App(ctk.CTk):
                 return None, None, None, None
 
         model_lvq = LvqNetwork()
+        model_simple_lvq = simpleLVQ()
 
         def plot_example_data():
             X_train, y_train, X_test, y_test = get_selected_dataset()
@@ -1001,26 +1009,55 @@ class App(ctk.CTk):
 
         def train_lvq():
             X_train, y_train, X_test, y_test = get_selected_dataset()
+            # Obtain the selected abstraction level
+            abstraction_level = self.abstraction_level_var.get()
             if X_train is not None and y_train is not None:
-                print("Train phase")
                 learning_rate = float(learning_rate_lvq.get())
                 epoch_max = int(epoch_max_lvq.get())
-
-                norm_X_train_lvq = model_lvq.norm_data(X_train)
-                self.trained_vectors_lvq = model_lvq.train(norm_X_train_lvq, y_train, learning_rate, epoch_max)
-                plot_lvq(norm_X_train_lvq, self.trained_vectors_lvq, y_train, title='After the training')
+                if abstraction_level == "Low Level":
+                    try:
+                        print("Train phase")
+                        norm_X_train_lvq = model_lvq.norm_data(X_train)
+                        self.trained_vectors_lvq = model_lvq.train(norm_X_train_lvq, y_train, learning_rate, epoch_max)
+                        plot_lvq(norm_X_train_lvq, self.trained_vectors_lvq, y_train, title='After the training')
+                        print("Training phase completed (Low Level)")
+                    except Exception as e:
+                        print(f"Error during training (Low Level): {e}")
+                if abstraction_level == "High Level":
+                    try:
+                        norm_X_train_lvq = model_lvq.norm_data(X_train)
+                        self.trained_vectors_lvq = model_simple_lvq.train(norm_X_train_lvq, y_train, learning_rate, epoch_max)
+                        plot_lvq(norm_X_train_lvq, self.trained_vectors_lvq, y_train, title='After the training')
+                        print("Training phase completed (High Level)")
+                    except Exception as e:
+                        print(f"Error during training (High Level): {e}")
             else:
                 print("An error occurred")
 
         # Test the network
         def test_lvq():
             X_train, y_train, X_test, y_test = get_selected_dataset()
+            # Obtain the selected abstraction level
+            abstraction_level = self.abstraction_level_var.get()
             if X_test is not None and y_test is not None:
-                print("Test phase")
-
-                norm_X_test_lvq = model_lvq.norm_data(X_test)
-                self.y_pred_lvq = model_lvq.test(norm_X_test_lvq)  # Predicted labels
-                plot_lvq(norm_X_test_lvq, self.trained_vectors_lvq, self.y_pred_lvq, title='Test LVQ', test=True)
+                if abstraction_level == "Low Level":
+                    try:
+                        print("Test phase")
+                        norm_X_test_lvq = model_lvq.norm_data(X_test)
+                        self.y_pred_lvq = model_lvq.test(norm_X_test_lvq)  # Predicted labels
+                        plot_lvq(norm_X_test_lvq, self.trained_vectors_lvq, self.y_pred_lvq, title='Test LVQ', test=True)
+                        print("Test phase completed (Low Level)")
+                    except Exception as e:
+                        print(f"Error during test (Low Level): {e}")
+                elif abstraction_level == "High Level":
+                    try:
+                        print("Test phase")
+                        norm_X_test_lvq = model_lvq.norm_data(X_test)
+                        self.y_pred_lvq = model_simple_lvq.test(norm_X_test_lvq)
+                        plot_lvq(norm_X_test_lvq, self.trained_vectors_lvq, self.y_pred_lvq, title='Test LVQ', test=True)
+                        print("Test phase completed (High Level)")
+                    except Exception as e:
+                        print(f"Error during test (High Level): {e}")
             else:
                 print("An error occurred")
 

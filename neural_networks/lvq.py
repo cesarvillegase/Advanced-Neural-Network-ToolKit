@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+from sklearn.preprocessing import StandardScaler
+from sklvq import GLVQ
 from sklearn.metrics import accuracy_score
 
 
@@ -80,6 +81,36 @@ def accuracy_lvq(y_test, y_pred_lvq):
     return results
 
 
+class simpleLVQ:
+    def __init__(self):
+        self.model = None
+        self.scaler = StandardScaler()
+
+    def train(self, data, labels, delta, epoch_max):
+        # Compute (fit) and apply (transform) z-transform
+        data = self.scaler.fit_transform(data)
+
+        # The creation of the model object used to fit the data to.
+        self.model = GLVQ(
+            distance_type="squared-euclidean",
+            activation_type="swish",
+            activation_params={"beta": 1},
+            solver_type="steepest-gradient-descent",
+            solver_params={"max_runs": epoch_max, "step_size": delta}
+        )
+
+        # Train the model using our data
+        self.model.fit(data, labels)
+        return self.model.prototypes_
+
+    def test(self, test_data):
+        # Compute z-transform
+        test_data = self.scaler.transform(test_data)
+        # Predict the labels using the trained model
+        predicted_labels = self.model.predict(test_data)
+        return predicted_labels
+
+'''
 # TESTING
 
 # Training data
@@ -103,7 +134,15 @@ X_test_lvq = np.array([[5.0, 8.0], [9.0, 8.0], [2.0, 9.0], [4.0, 8.0], [4.0, 7.0
 y_test_lvq = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
                        0, 1, 1, 1, 1, 1, 0, 0, 0, 0])
 
-'''
+model = simpleLVQ()
+norm_X_train_lvq = LvqNetwork.norm_data(X_train_lvq)
+trained_vectors_lvq = model.train(X_train_lvq, y_train_lvq, delta=0.1, epoch_max=500)
+# plot_lvq(norm_X_train_lvq, trained_vectors_lvq, y_train_lvq, title='After the training')
+
+norm_X_test_lvq = LvqNetwork.norm_data(X_test_lvq)
+labels_predicted_lvq = model.test(norm_X_test_lvq)
+plot_lvq(norm_X_test_lvq, trained_vectors_lvq, y_test_lvq, title="Test LVQ")
+
 model = LvqNetwork()
 norm_X_train_lvq = model.norm_data(X_train_lvq)
 norm_vectors = model.init_vectors(norm_X_train_lvq, y_train_lvq)
