@@ -105,36 +105,3 @@ class HopfieldNetworkNeurolab:
         output = output.reshape(pattern_shape)
 
         return output
-
-
-
-img_1_path = r"C:\Users\cvill\iCloudDrive\workspace\DeepL\Interface\img_1.png"
-img_1 = Image.open(img_1_path) #.convert("RGB")
-img_1_array = np.array(img_1) / 255.0 * 2 - 1
-
-img_1_noisy_path = r"C:\Users\cvill\iCloudDrive\workspace\DeepL\Interface\img_1_noisy.png"
-img_1_noisy = Image.open(img_1_noisy_path)
-img_1_noisy_array = np.array(img_1_noisy) / 255.0 * 2 - 1
-
-print(img_1_array[0].shape)
-print(img_1_noisy_array[0].shape)
-'''
-model = HopfieldNetwork(1000)
-model.train([img_1_array])
-recontructed_image = model.reconstruct(img_1_array)
-'''
-hopfield_net = HopfieldNetworkNeurolab()
-hopfield_net.train(img_1_array)
-recontructed_image = hopfield_net.reconstruct(img_1_noisy_array)
-print(recontructed_image[0].shape)
-print(recontructed_image)
-
-original_img = [((img_1_array + 1) / 2 * 255).astype(np.uint8)]
-noisy_img = [((img_1_noisy_array + 1) / 2 * 255).astype(np.uint8)]
-rec_img = [((recontructed_image + 1) / 2 * 255).astype(np.uint8)]
-
-print(rec_img)
-
-plot_images_hop(original_img, noisy_img, rec_img)
-
-
