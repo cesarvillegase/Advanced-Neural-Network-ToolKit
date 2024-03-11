@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import tensorflow as tf
+from keras import layers, losses, Model
 from sklearn.metrics import accuracy_score
 
 
@@ -80,16 +82,18 @@ class AutoEncoder:
 
         return self.loss, latent_space, decoded_inputs
 
-def plot_loss_ac(loss_accuracy):
+
+def plot_loss_ac(loss_values):
     with plt.style.context('seaborn-v0_8-darkgrid'):
-        plt.plot(range(1, len(loss_accuracy) + 1), loss_accuracy, color='orange', label='MSE')
+        plt.plot(range(1, len(loss_values) + 1), loss_values, color='orange', label='MSE')
         plt.title("Training for the Auto encoder")
         plt.xlabel('Epochs')
         plt.ylabel('Loss')
         plt.legend()
         plt.show()
 
-        print(loss_accuracy[-1])
+        print(loss_values[-1])
+
 
 def plot_images_ac(original_image, reconstructed_img):
     """Plot the original, noisy, and reconstructed images."""
@@ -114,17 +118,72 @@ def plot_images_ac(original_image, reconstructed_img):
     plt.tight_layout()
     plt.show()
 
-# TESTING
+
+class SimpleAutoencoder(Model):
+    def __init__(self, latent_dimensions, data_shape):
+        super(SimpleAutoencoder, self).__init__()
+        self.latent_dimensions = latent_dimensions
+        self.data_shape = data_shape
+        self.flat_dim = np.prod(data_shape)
+
+        # Encoder architecture using a Sequential model
+        self.encoder = tf.keras.Sequential([
+            layers.Flatten(),
+            layers.Dense(latent_dimensions, activation='sigmoid'),
+        ])
+
+        # Decoder architecture using another Sequential model
+        self.decoder = tf.keras.Sequential([
+            layers.Dense(self.flat_dim, activation='sigmoid'),  # Use the precalculated flat dimension
+            layers.Reshape(data_shape)
+        ])
+
+    # Forward pass method defining the encoding and decoding steps
+    def call(self, input_data):
+        encoded_data = self.encoder(input_data)
+        decoded_data = self.decoder(encoded_data)
+        return decoded_data
+
+    def train(self, data, epochs=1200):
+        self.compile(optimizer='adam', loss=losses.MeanSquaredError())
+        training_data = (data / 255.0).astype(np.float32)  # Normalize and cast to float32
+        training_data = tf.reshape(training_data, [-1, *self.data_shape])  # Reshape data
+        history = self.fit(training_data, training_data,
+                           epochs=epochs,
+                           shuffle=True,
+                           validation_data=(training_data, training_data))
+
+        # Compute latent space
+        encoded_data = self.encoder(training_data)
+        # Decode the encoded data
+        decoded_data = self.decoder(encoded_data)
+        decoded_data = np.round(np.clip(decoded_data * 255, 0, 255)).astype(np.uint8)  # Clip and convert to uint8
+        # Calculate loss
+        loss = history.history['loss']
+        return loss, encoded_data, decoded_data
+
+
 '''
+# TESTING
+
 X_train_ac = np.array([[123, 32, 24], [72, 204, 52], [145, 56, 91]])
 alpha_ac = 0.9  # alpha = 1
 momentum_ac = 0.4  # Momentum = 0.4
-epoch_max_ac = 10000
+epoch_max_ac = 1200
 
 model = AutoEncoder()
 loss_ac, latent_space, decoded_inputs_ac = model.train(X_train_ac, alpha_ac, momentum_ac, epoch_max_ac)
 
 print(f"\nOriginal Inputs: \n{X_train_ac.flatten()}")
+print(f"\nLatent Space: \n{latent_space}")
+print(f"\nReconstructed Inputs: \n{decoded_inputs_ac}")
+
+
+input_data_shape = X_train_ac.shape[1:]
+model_simpleac = SimpleAutoencoder(latent_dimensions=1, data_shape=input_data_shape)
+loss_ac, latent_space, decoded_inputs_ac = model_simpleac.train(X_train_ac, epoch_max_ac)
+
+print(f"\nOriginal Inputs: \n{X_train_ac}")
 print(f"\nLatent Space: \n{latent_space}")
 print(f"\nReconstructed Inputs: \n{decoded_inputs_ac}")
 

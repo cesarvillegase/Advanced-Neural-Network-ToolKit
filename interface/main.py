@@ -848,31 +848,47 @@ class App(ctk.CTk):
                 epoch_max_ac_value = int(epoch_max_ac.get())
                 if abstraction_level == "Low Level":
                     self.loss, latent_space, self.decoded_inputs = autoencoder_model.train(data, learning_rate_ac_value, momentum_ac_value, epoch_max_ac_value)
+                    print("Training completed (Low Level).")
                 elif abstraction_level == "High Level":
                     input_data_shape = data.shape[1:]  # Assuming the first dimension is the number of samples
-                    latent_dimensions = 1
+                    latent_dimensions = 6
                     # Create an instance of the SimpleAutoencoder model
                     simple_autoencoder = SimpleAutoencoder(latent_dimensions, input_data_shape)
                     # Train the autoencoder
                     loss, latent_space, decoded_inputs = simple_autoencoder.train(data, epochs=epoch_max_ac_value)
                     self.loss = loss
-                    self.decoded_inputs = decoded_inputs
+                    self.decoded_inputs = (decoded_inputs).astype(int)
+                    print("Training completed (High Level).")
             else:
                 print("The model need's the hyperparameters")
 
         # Modify the function call to plot_images
         def reconstruct_selected_image():
             data = get_selected_image_data()
+            # Initialize reconstructed_image to None or a default value
+            reconstructed_image = None
+
+            # Obtain the selected abstraction level
+            abstraction_level = self.abstraction_level_var.get()
+
             if data is not None:
-                reconstructed_image = self.decoded_inputs.reshape(16, 16,
-                                                                  3)  # This should be a NumPy array. If it's not, you'll have to adjust this part.
-                if isinstance(reconstructed_image, Image.Image):
-                    # If decoded_inputs is still a PIL Image, convert it to a NumPy array
-                    reconstructed_image = Image.fromarray(np.uint8(self.decoded_inputs))
+                if abstraction_level == "Low Level":
+                    reconstructed_image = self.decoded_inputs.reshape(16, 16, 3)  # This should be a NumPy array.
+                    if isinstance(reconstructed_image, Image.Image):
+                        # If decoded_inputs is still a PIL Image, convert it to a NumPy array
+                        reconstructed_image = np.array(reconstructed_image)
+                    print("Test completed (Low Level).")
+                elif abstraction_level == "High Level":
+                    reconstructed_image = self.decoded_inputs.reshape(16, 16, 3)
+                    reconstructed_image = Image.fromarray(np.uint8(reconstructed_image))
+                    # reconstructed_image = reconstructed_image.astype(np.uint8)
+                    print("Test completed (High Level).")
 
-                original_img = [data]
-
-                plot_images_ac(original_img, reconstructed_image)
+            # Only call plot_images_ac if reconstructed_image has been assigned
+            if reconstructed_image is not None:
+                plot_images_ac([data], reconstructed_image)
+            else:
+                print("No image to reconstruct.")
 
         def plot_loss_from_training():
             # Plot the loss directly using the loss values obtained during the test
