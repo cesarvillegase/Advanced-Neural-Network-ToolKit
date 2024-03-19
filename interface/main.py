@@ -209,9 +209,6 @@ class App(ctk.CTk):
         img_2_wn_array = np.array(img_2_wn) / 255.0 * 2 - 1
         img_3_wn_array = np.array(img_3_wn) / 255.0 * 2 - 1
 
-        selected_original_image_array = None
-        selected_noisy_image_array = None
-
         # Function to browse and select the original image
         def browse_original_image():
             nonlocal selected_original_image_array
@@ -869,6 +866,17 @@ class App(ctk.CTk):
         third_image_label = ctk.CTkLabel(tab, image=image3, text="")
         third_image_label.grid(row=4, column=2, padx=(20, 0), pady=(5, 5), sticky="w")
 
+        fourth_image_radio = ctk.CTkRadioButton(tab, text="Selected Image",
+                                                variable=image_choice_var, value="Fourth Image")
+        fourth_image_radio.grid(row=3, column=3, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        # Initialize fourth image label with a placeholder image
+        obtained_image = Image.new("RGB", (240, 240), "white")
+        fourth_image_label = ctk.CTkLabel(tab, image=ImageTk.PhotoImage(obtained_image), text="")
+        fourth_image_label.grid(row=4, column=3, padx=(20, 0), pady=(5, 5), sticky="w")
+
+        selected_original_image_array = None
+
         # ######## OBTAIN THE IMAGE PATHS ########
         img_1_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\autoencoder\data\img_1.png"
         img_2_path = r"\Users\cvill\OneDrive\Documents\GitHub\Advanced-Neural-Network-ToolKit\neural_networks\images\autoencoder\data\img_2.png"
@@ -884,6 +892,24 @@ class App(ctk.CTk):
         img_2_array = np.array(img_2)  # / 255.0 * 2 - 1
         img_3_array = np.array(img_3)  # / 255.0 * 2 - 1
 
+        # Function to browse and select the original image
+        def browse_original_image():
+            nonlocal selected_original_image_array
+            original_filename = filedialog.askopenfilename(title="Select Original Image", filetypes=(
+                ("Image files", "*.png;*.jpg;*.jpeg"), ("All files", "*.*")))
+
+            if original_filename:
+                # Load the selected original image and preprocess it
+                original_pil_image = Image.open(original_filename).convert("RGB")
+                selected_original_image_array = np.array(original_pil_image)
+
+                print("Selected Original Image:", original_filename)
+
+                original_resized_image = original_pil_image.resize((240, 240))
+                fourth_image_label.configure(image=ImageTk.PhotoImage(original_resized_image))
+
+            return selected_original_image_array
+
         # ######## Function to obtain the chosen image ########
         def get_selected_image_data():
             selected_value = image_choice_var.get()
@@ -893,6 +919,8 @@ class App(ctk.CTk):
                 return img_2_array
             elif selected_value == "Third Image":
                 return img_3_array
+            elif selected_value == "Fourth Image":
+                return selected_original_image_array
             else:
                 return None
 
@@ -955,21 +983,28 @@ class App(ctk.CTk):
             loss_values = self.loss
             plot_loss_ac(loss_values)
 
+        # Creation of buttons for browsing original and noisy images
+        button_browse_original_image = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
+                                                     text="Browse Original Image",
+                                                     text_color=("gray10", "#DCE4EE"),
+                                                     anchor="w", command=browse_original_image)
+        button_browse_original_image.grid(row=6, column=0, padx=(20, 20), pady=(20, 20))
+
         button_train_ac = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                         text="Train Network", text_color=("gray10", "#DCE4EE"),
                                         command=train_ac)
-        button_train_ac.grid(row=6, column=0, padx=(20, 20), pady=(20, 20))
+        button_train_ac.grid(row=6, column=1, padx=(20, 20), pady=(20, 20))
 
         button_reconstruction_ac = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                                  text="Reconstruct image",
                                                  text_color=("gray10", "#DCE4EE"),
                                                  anchor="w", command=reconstruct_selected_image)
-        button_reconstruction_ac.grid(row=6, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        button_reconstruction_ac.grid(row=6, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         button_plot_loss_ac = ctk.CTkButton(tab, fg_color="transparent", border_width=2,
                                             text="Plot loss", text_color=("gray10", "#DCE4EE"),
                                             command=plot_loss_from_training)
-        button_plot_loss_ac.grid(row=6, column=2, padx=(20, 20), pady=(20, 20))
+        button_plot_loss_ac.grid(row=6, column=3, padx=(20, 20), pady=(20, 20))
 
     # ########### 5th Tab ###########
     def setup_lvq(self, tab):
